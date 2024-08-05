@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+    <style>
+        input{
+            width: 300px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            padding: 5px;
+
+        }
+        .title{
+            font-weight: bolder;
+
+        }
+        #join{
+            width: 310px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            padding: 5px;
+
+        }
+        #join:hover {
+            background-color : #ccccccde;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<form name="joinForm">
+    <table align="center">
+        <tr>
+            <td>
+                <span class="title">아이디</span><br><input type="text" placeholder="4~20자리" name="memberId">
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <br><span class="title">비밀번호</span><br><input type="text" placeholder="8~16자리"name="memberPassword">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <br><span class="title">비밀번호 확인</span><br><input type="text" placeholder="비밀번호 확인 입력"name="memberPasswordChk">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <br><span class="title">이름</span><br><input type="text" placeholder="이름 입력" name="memberName">
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <br><span class="title">이미지</span><br><input type="file" name="memberFile">
+            </td>
+        </tr>
+
+        <tr align="center">
+            <td>
+                <br><button type="button" onclick="save();" id="join">회원가입 완료</button>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script>
+function save(){
+    if(confirm('회원가입 하시겠습니까?')){
+    document.joinForm.action="/";
+    document.joinForm.method="post";
+    document.joinForm.submit();
+    }
+}
+</script>
+</body>
+</html>
