@@ -18,7 +18,7 @@ public class Member {
     @Column(length = 20,unique = true)
     private String username;
 
-    @Column(length=16)
+    @Column(length=255)
     private String password;
 
     @Column(length=50)
@@ -27,5 +27,8 @@ public class Member {
     private String email;
 
     private String memberFile;
+
+    //애는 테이블 필드와는 무관한 변수(테이블 필드에 추가안됨)
+    private transient String passwordChk;
 
 }
