@@ -18,21 +18,22 @@ public class MemberController {
     public String join() {
         return "member/join";
     }
-
     @PostMapping("/member/joinProc")
     @ResponseBody
-    public ResponseEntity<?> join(@ModelAttribute Member member) {
+    public ResponseEntity<?> join(
+            @ModelAttribute Member member,
+            @RequestParam("joinCode") String joinCode
+            ) {
         try {
-            memberService.join(member);
-            return ResponseEntity.ok(Map.of("message", "회원가입 성공"));
+            String successMessage = memberService.join(member,joinCode);
+            return ResponseEntity.ok(Map.of("message", successMessage));
         } catch (ValidationException e) {
             return ResponseEntity.badRequest().body(e.getErrors());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         }
     }
-
-    @GetMapping("/member/login")
+    @GetMapping("/login")
     public String login() {
         return "member/login";
     }
