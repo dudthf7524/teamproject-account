@@ -15,7 +15,7 @@ public class SecurityConfig {
     private final MyUserDetailsService myUserDetailsService;
 
     @Bean
-    PasswordEncoder PasswordEncoder(){
+    PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
     public SecurityConfig(MyUserDetailsService myUserDetailsService) {
@@ -47,7 +47,7 @@ public class SecurityConfig {
 
         );
         // OAuth2 로그인 설정 (구글 로그인)
-        http.oauth2Login(oauth2Login ->
+       /* http.oauth2Login(oauth2Login ->
                 oauth2Login
                         .loginPage("/login") // 로그인 페이지 설정
                         .defaultSuccessUrl("/") // 로그인 성공 시 리디렉션할 URL
@@ -55,8 +55,15 @@ public class SecurityConfig {
                                 userInfoEndpoint
                                         .userService(myUserDetailsService) // OAuth2UserService 설정
                         )
-
+        );*/
+        http.oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
+                .defaultSuccessUrl("/")
+                .userInfoEndpoint(userInfo -> userInfo
+                        .userService(myUserDetailsService) // OAuth2UserService 설정
+                )
         );
+
         return http.build();
     }
 
