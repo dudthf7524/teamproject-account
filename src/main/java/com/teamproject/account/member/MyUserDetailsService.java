@@ -6,14 +6,15 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -61,18 +62,28 @@ public class MyUserDetailsService implements UserDetailsService,OAuth2UserServic
             member.setEmail(email);
             member.setMemberName(name);
             member.setProviderId(providerId);
-            member.setProvider("Google");
+            member.setProvider(provider);
+            member.setPassword(generateRandomPassword());
             memberRepository.save(member);
         }
 
-        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
-
         // DefaultOAuth2User를 통해 OAuth2User와 UserDetails를 동시에 구현
-        return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), "email");
+        return new CustomUserDetails(member, oAuth2User.getAttributes());
     }
 
+    private String generateRandomPassword() {
+        int length = 12 + new Random().nextInt(3); // 12~14자리 문자열 생성
+        StringBuilder sb = new StringBuilder(length);
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
+        SecureRandom random = new SecureRandom();
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(characters.length());
+            sb.append(characters.charAt(index));
+        }
 
+        return sb.toString();
+    }
 
 
 }
