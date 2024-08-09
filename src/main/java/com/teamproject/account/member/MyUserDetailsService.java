@@ -1,6 +1,4 @@
 package com.teamproject.account.member;
-
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -8,15 +6,19 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
-public class MyUserDetailsService implements UserDetailsService {
+public class MyUserDetailsService implements UserDetailsService,OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     private final MemberRepository memberRepository;
 
     @Override
@@ -35,4 +37,42 @@ public class MyUserDetailsService implements UserDetailsService {
         authority.add(new SimpleGrantedAuthority("일반유저"));
         return new User(user.getUsername(),user.getPassword(),authority);
     }
+
+    @Override
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
+        OAuth2User oAuth2User = delegate.loadUser(userRequest);
+
+        String provider = userRequest.getClientRegistration().getRegistrationId();
+        String providerId = oAuth2User.getAttribute("sub"); // Google의 유저 ID
+
+        String email = oAuth2User.getAttribute("email");
+        String name = oAuth2User.getAttribute("name");
+
+        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+        Member member;
+
+        if (memberOptional.isPresent()) {
+            member = memberOptional.get();
+        } else {
+            // Google 계정을 통해 신규 사용자 등록
+            member = new Member();
+            member.setUsername(email);
+            member.setEmail(email);
+            member.setMemberName(name);
+            member.setProviderId(providerId);
+            member.setProvider("Google");
+            memberRepository.save(member);
+        }
+
+        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+
+        // DefaultOAuth2User를 통해 OAuth2User와 UserDetails를 동시에 구현
+        return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), "email");
+    }
+
+
+
+
+
 }

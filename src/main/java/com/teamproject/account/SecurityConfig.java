@@ -1,6 +1,6 @@
 package com.teamproject.account;
-
-
+import com.teamproject.account.member.MyUserDetailsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,10 +12,14 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private final MyUserDetailsService myUserDetailsService;
 
     @Bean
     PasswordEncoder PasswordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+    public SecurityConfig(MyUserDetailsService myUserDetailsService) {
+        this.myUserDetailsService = myUserDetailsService;
     }
 
     @Bean
@@ -36,11 +40,24 @@ public class SecurityConfig {
         );
         http.logout(logout
                 -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
+                .logoutUrl("/logout") //해당 url로 가면 로그아웃됨
+                .logoutSuccessUrl("/") //로그아웃 성공시 페이지
                 .invalidateHttpSession(true) // 세션 무효화
                 .deleteCookies("JSESSIONID") // 쿠키 삭제
+
+        );
+        // OAuth2 로그인 설정 (구글 로그인)
+        http.oauth2Login(oauth2Login ->
+                oauth2Login
+                        .loginPage("/login") // 로그인 페이지 설정
+                        .defaultSuccessUrl("/") // 로그인 성공 시 리디렉션할 URL
+                        .userInfoEndpoint(userInfoEndpoint ->
+                                userInfoEndpoint
+                                        .userService(myUserDetailsService) // OAuth2UserService 설정
+                        )
+
         );
         return http.build();
     }
+
 }

@@ -34,6 +34,34 @@
             color: red;
             font-size: 12px;
         }
+         /* 구글 로그인 버튼 스타일 */
+        .google-login-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 300px;
+            height: 40px; /* 기존 로그인 버튼과 높이 맞추기 */
+            border-radius: 5px;
+            background-color: #4285F4;
+            color: white;
+            font-weight: bold;
+            font-size: 16px; /* 폰트 크기 조정 */
+            text-align: center;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px 0;
+        }
+        .google-login-button:hover {
+            background-color: #357ae8;
+        }
+        .google-login-button img {
+            width: 300px; /* 이미지 너비 조정 */
+            height: 40px; /* 버튼과 동일한 높이로 설정 */
+            margin-right: 10px;
+            vertical-align: middle; /* 이미지 수직 정렬 */
+        }
     </style>
 </head>
 <body>
@@ -63,6 +91,15 @@
                 <br><button id="login">로그인</button>
             </td>
         </tr>
+        <tr align="center">
+            <td>
+                <a href="/oauth2/authorization/google" class="google-login-button">
+                    <img src="https://developers.google.com/identity/images/btn_google_signin_dark_normal_web.png" alt="Google Logo">
+                </a>
+            </td>
+        </tr>
+
+
     </table>
 </form>
 
