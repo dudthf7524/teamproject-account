@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>로그인</title>
@@ -30,12 +30,16 @@
         #login:hover {
             cursor: pointer;
         }
+        .error {
+            color: red;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
 
-<form>
-    <table align="center">
+<form method="POST" action="/login">
+    <table align="center" >
         <tr>
             <td align="center">
                 <span id="title">가계부 로그인</span>
@@ -48,7 +52,10 @@
         </tr>
         <tr>
             <td>
-                <br><input type="text" placeholder="비밀번호"name="password">
+                <br><input type="password" placeholder="비밀번호"name="password"><br>
+                <div th:if="${param.error}" class="error">
+                    아이디 또는 비밀번호가 틀립니다.
+                </div>
             </td>
         </tr>
         <tr align="center">
