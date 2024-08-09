@@ -30,8 +30,17 @@ public class SecurityConfig {
                 //특정 페이지 로그인검사 할지말지 결정하는코드 .permitAll()함수는 아무나 접속허용 /**는 모든Url을 의미 즉
                 //위코드는 모든 Url 에서 모든유저는 접속허용한다는 뜻
         );
-
-
+        http.formLogin((formLogin)
+                -> formLogin.loginPage("/login")
+                .defaultSuccessUrl("/")
+        );
+        http.logout(logout
+                -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
+                .invalidateHttpSession(true) // 세션 무효화
+                .deleteCookies("JSESSIONID") // 쿠키 삭제
+        );
         return http.build();
     }
 }
