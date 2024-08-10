@@ -45,10 +45,19 @@ public class MyUserDetailsService implements UserDetailsService,OAuth2UserServic
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
         String provider = userRequest.getClientRegistration().getRegistrationId();
-        String providerId = oAuth2User.getAttribute("sub"); // Google의 유저 ID
+        String providerId ="";
+        String email = "";
+        String name = "";
 
-        String email = oAuth2User.getAttribute("email");
-        String name = oAuth2User.getAttribute("name");
+        if(provider.equals("google")){
+             providerId = oAuth2User.getAttribute("sub"); // Google의 유저 ID
+             email = oAuth2User.getAttribute("email");
+             name = oAuth2User.getAttribute("name");
+        }else{
+             providerId = oAuth2User.getAttribute("id"); // 카카오톡의 경우 "id"로 유저 ID를 가져옵니다.
+             email = oAuth2User.getAttribute("kakao_account.email");
+             name = oAuth2User.getAttribute("properties.nickname");
+        }
 
         Optional<Member> memberOptional = memberRepository.findByEmail(email);
         Member member;
