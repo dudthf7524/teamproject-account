@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>In & Out</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    .header {
+      padding: 20px;
+      background-color: #ecdcff;
+      color: #7551a0;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 36px;
+    }
+    .container {
+      display: flex;
+      height: calc(100vh - 80px); /* header의 높이를 뺀 나머지 */
+    }
+    .sidebar {
+      width: 250px;
+      background-color: #f8f8f8;
+      border-right: 1px solid #dcdcdc;
+      padding: 20px;
+    }
+    .sidebar h1 {
+      font-size: 24px;
+      color: #7551a0;
+    }
+    .sidebar ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .sidebar ul li {
+      margin: 10px 0;
+    }
+    .sidebar ul li a {
+      text-decoration: none;
+      color: #333;
+      display: flex;
+      align-items: center;
+    }
+    .sidebar ul li a:hover {
+      text-decoration: underline;
+    }
+    .content {
+      flex-grow: 1;
+      padding: 20px;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .content-header h2 {
+      margin: 0;
+    }
+    .nav-buttons button {
+      background: #f5f5f5;
+      border: none;
+      border-radius: 50%;
+      padding: 10px;
+      cursor: pointer;
+    }
+    .nav-buttons button:hover {
+      background: #e0e0e0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #dcdcdc;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    td input[type="date"],
+    td input[type="text"],
+    td select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px;
+      border: 1px solid #dcdcdc;
+      border-radius: 4px;
+    }
+    .action-buttons {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: auto;
+    }
+    .action-buttons button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .action-buttons .save {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+    }
+    .action-buttons .delete {
+      background-color: #f44336;
+      color: white;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+    <h1>가계부</h1>
+</div>
+<div class="container">
+    <div class="sidebar">
+        <ul>
+            <li><a href="/account/calender">달력</a></li>
+            <li><a href="/income/list">수입/지출</a></li>
+            <li><a href="#">보고서</a></li>
+        </ul>
+    </div>
+    <div class="content">
+        <div class="content-header">
+            <h2 id="currentMonthYear" th:text="${searchedDate}"></h2>
+            <div class="nav-buttons">
+                <button onclick="changeMonth(-1)">&lt;</button>
+                <button onclick="changeMonth(1)">&gt;</button>
+            </div>
+            <div class="nav-buttons">
+                <form name="searchForm">
+                    <button type="button" onclick="regDtSearch()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <input type="hidden" name="regDt">
+                </form>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th>수정/삭제 체크</th>
+                <th>날짜</th>
+                <th>수입내역</th>
+                <th>금액</th>
+                <th>메모</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="income: ${incomeDTOList}">
+                <td><input type="checkbox" name="incomeId" th:value="${income.incomeId}" ></td>
+                <td th:text="${income.regDt}"></td>
+                <td th:text="${income.incomeCategoryName}"></td>
+                <td th:text="${income.price}"></td>
+                <td th:text="${income.memo}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="action-buttons">
+            <button class="save"><a href = "/income/write" style="color: white;">추가</a></button>
+            <button class="update" onclick="incomeUpdate();">수정</button>
+            <button class="delete" onclick="incomeDelete();">삭제</button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+  let today = new Date();
+  let year = today.getFullYear();
+  let month = today.getMonth() + 1;
+  let currentMonth = month;
+  let currentYear = year;
+
+
+
+function updateMonthYearDisplay() {
+    const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
+    document.getElementById('currentMonthYear').innerText = `${monthNames[currentMonth - 1]} ${currentYear}`;
+    const formattedMonth = currentMonth.toString().padStart(2, '0');
+    document.searchForm.regDt.value = `${currentYear}-${formattedMonth}`;
+  }
+
+  function changeMonth(delta) {
+    currentMonth += delta;
+    if (currentMonth > 12) {
+      currentMonth = 1;
+      currentYear++;
+    } else if (currentMonth < 1) {
+      currentMonth = 12;
+      currentYear--;
+    }
+    updateMonthYearDisplay();
+  }
+
+  function incomeUpdate() {
+    const checkboxes = document.querySelectorAll('input[name="incomeId"]');
+    let incomeId = null;
+
+    for (let checkbox of checkboxes) {
+      if (checkbox.checked) {
+        incomeId = checkbox.value;
+        break;
+      }
+    }
+
+    if (incomeId) {
+      location.href = `/income/update/${incomeId}`;
+    } else {
+      alert('체크된 항목이 없습니다.');
+    }
+  }
+
+  function incomeDelete() {
+    const checkboxes = document.querySelectorAll('input[name="incomeId"]');
+    let incomeId = null;
+
+    for (let checkbox of checkboxes) {
+      if (checkbox.checked) {
+        incomeId = checkbox.value;
+        break;
+      }
+    }
+
+    if (incomeId) {
+      location.href = `/income/delete/${incomeId}`;
+    } else {
+      alert('체크된 항목이 없습니다.');
+    }
+  }
+  function regDtSearch(){
+      document.searchForm.action = "/income/search";
+      document.searchForm.method = "post";
+      document.searchForm.submit();
+  }
+
+  // 페이지가 로드될 때 초기 표시 설정
+  document.addEventListener('DOMContentLoaded', function () {
+    const searchedDate = /*[[${searchedDate}]]*/ '[[${searchedDate}]]'; // 서버에서 전달된 searchedDate를 가져옴
+
+    if (searchedDate) {
+      const [year, month] = searchedDate.split('-');
+      currentYear = parseInt(year, 10);
+      currentMonth = parseInt(month, 10);
+    }
+
+    updateMonthYearDisplay();
+  });
+</script>
+</body>
+</html>
