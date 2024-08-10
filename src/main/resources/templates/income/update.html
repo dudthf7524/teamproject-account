@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>In & Out</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .header {
+            padding: 20px;
+            background-color: #ecdcff;
+            color: #7551a0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 36px;
+        }
+        .container {
+            display: flex;
+            height: calc(100vh - 80px); /* header의 높이를 뺀 나머지 */
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #f8f8f8;
+            border-right: 1px solid #dcdcdc;
+            padding: 20px;
+        }
+        .sidebar h1 {
+            font-size: 24px;
+            color: #7551a0;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar ul li a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .content-header h2 {
+            margin: 0;
+        }
+        .nav-buttons button {
+            background: #f5f5f5;
+            border: none;
+            border-radius: 50%;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .nav-buttons button:hover {
+            background: #e0e0e0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #dcdcdc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+        td input[type="date"],
+        td input[type="text"],
+        td select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+            border: 1px solid #dcdcdc;
+            border-radius: 4px;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: auto;
+        }
+        .action-buttons button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .action-buttons .save {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+        }
+        .action-buttons .delete {
+            background-color: #f44336;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>가계부</h1>
+</div>
+<div class="container">
+    <div class="sidebar">
+        <ul>
+            <li><a href="/account/calender">달력</a></li>
+            <li><a href="#">수입/지출</a></li>
+            <li><a href="#">보고서</a></li>
+        </ul>
+    </div>
+    <div class="content">
+        <div class="content-header">
+            <h2>11월 2022</h2>
+            <div class="nav-buttons">
+                <button>&lt;</button>
+                <button>&gt;</button>
+            </div>
+        </div>
+        <form name = "incomeForm">
+            <table>
+                <thead>
+                <tr>
+                    <th>날짜</th>
+                    <th>수입내역</th>
+                    <th>금액</th>
+                    <th>메모</th>
+                    <span th:if="${incomeId == 0}">여자</span>
+                    <span th:text="${incomeId}">여자</span>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="income: ${incomeDTOList}">
+                    <div th:if="${income.incomeId == incomeId}">
+
+                        <td><input type="date" th:value="${income.regDt}" name="regDt"></td>
+                        <td>
+                            <select name="incomeCategoryId" th:value="${income.incomeCategoryName}" >
+                                <option value="11">용돈</option>
+                                <option value="22">월급</option>
+                            </select>
+                        </td>
+                        <td><input type="text" th:value="${income.price}" name="price"></td>
+                        <td><input type="text" th:value="${income.memo}" name="memo"></td>
+                    </div>
+
+                    <div th:unless="${income.incomeId == incomeId}">
+                        <td th:text="${income.regDt}"></td>
+                        <td th:text="${income.incomeCategoryName}"></td>
+                        <td th:text="${income.price}"></td>
+                        <td th:text="${income.memo}"></td>
+                    </div>
+                </tr>
+                </tbody>
+            </table>
+            <div class="action-buttons">
+                <td><input type="hidden" th:value="${incomeId}" name="incomeId"></td>
+                <button class="update" onclick="update();">수정</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function update() {
+        document.incomeForm.action = "/income/update";
+        document.incomeForm.method = "post";
+        document.incomeForm.submit();
+
+  }
+
+
+</script>
+</body>
+</html>
