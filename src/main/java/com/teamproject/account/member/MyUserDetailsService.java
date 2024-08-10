@@ -35,7 +35,19 @@ public class MyUserDetailsService implements UserDetailsService,OAuth2UserServic
         List<GrantedAuthority> authority = new ArrayList<>();
         //권한을 추가할때는 new SimpleGrantedAuthority() 함수를 사용해야한다..
         authority.add(new SimpleGrantedAuthority("일반유저"));
-        return new User(user.getUsername(),user.getPassword(),authority);
+        var a = new CustomUser(user.getUsername(), user.getPassword(), authority);
+        a.memberNo = user.getMemberNo();
+        return a;
+    }
+
+    public class CustomUser extends User {
+        public Long memberNo;
+        public CustomUser(String username,
+                          String password,
+                          List<GrantedAuthority> authorities ) {
+            super(username, password, authorities);
+        }
+
     }
 
     @Override
