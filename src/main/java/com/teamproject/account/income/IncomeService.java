@@ -25,4 +25,15 @@ public class IncomeService {
         }
         return incomeDTOList;
     }
+
+    public void updateForm(IncomeDTO incomeDTO) {
+        IncomeEntity incomeEntity = IncomeEntity.toIncomeEntity(incomeDTO);
+        incomeRepository.save(incomeEntity);
+    }
+
+    public void deleteById(Long incomeId) {
+        incomeRepository.deleteById(incomeId);
+    }
+
+
 }
