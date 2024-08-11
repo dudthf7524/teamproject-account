@@ -108,6 +108,7 @@
             margin-left: 10px;
             cursor: pointer;
         }
+
     </style>
 </head>
 <body>
@@ -124,13 +125,12 @@
     </div>
     <div class="content">
         <div class="content-header">
-            <h2>수입</h2>
+            <h2 th:text="${regDt}"></h2>
         </div>
-        <form name = "incomeForm">
+        <form name = "updateForm">
             <table>
                 <thead>
                 <tr>
-                    <th>수정/삭제 체크</th>
                     <th>날짜</th>
                     <th>수입내역</th>
                     <th>금액</th>
@@ -139,79 +139,45 @@
                 </thead>
                 <tbody>
                 <tr th:each="income: ${incomeDTOList}">
-                    <td><input type="checkbox" name="incomeId" th:value="${income.incomeId}" ></td>
-                    <td th:text="${income.regDt}"></td>
-                    <td th:text="${income.incomeCategoryName}"></td>
-                    <td th:text="${income.price}"></td>
-                    <td th:text="${income.memo}"></td>
-                </tr>
+                    <div th:if="${income.incomeId == incomeId}">
 
-                <tr>
-                    <td></td>
-                    <td><input type="date" name="regDt"></td>
-                    <td>
-                        <select name="incomeCategoryId">
-                            <option value="11">용돈</option>
-                            <option value="22">월급</option>
-                        </select>
-                    </td>
-                    <td><input type="text" name="price"></td>
-                    <td><input type="text" name="memo"></td>
+                        <td><input type="date" th:value="${income.regDt}" name="regDt"></td>
+                        <td>
+                            <select name="incomeCategoryId" th:value="${income.incomeCategoryName}" >
+                                <option value="11">용돈</option>
+                                <option value="22">월급</option>
+                            </select>
+                        </td>
+                        <td><input type="text" th:value="${income.price}" name="price"></td>
+                        <td><input type="text" th:value="${income.memo}" name="memo"></td>
+                    </div>
+
+                    <div th:unless="${income.incomeId == incomeId}">
+                        <td th:text="${income.regDt}"></td>
+                        <td th:text="${income.incomeCategoryName}"></td>
+                        <td th:text="${income.price}"></td>
+                        <td th:text="${income.memo}"></td>
+                    </div>
                 </tr>
                 </tbody>
             </table>
             <div class="action-buttons">
-                <button class="save" onclick="save();">저장</button>
+                <td><input type="hidden" th:value="${incomeId}" name="incomeId"></td>
+                <button class="update" onclick="update();">수정</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    function save(){
-        alert('저장');
-        document.incomeForm.action = "/income/write";
-        document.incomeForm.method = "post";
-        document.incomeForm.submit();
-    }
-
     function update() {
-    const checkboxes = document.querySelectorAll('input[name="incomeId"]');
-    let incomeId = null;
-
-    for (let checkbox of checkboxes) {
-        if (checkbox.checked) {
-            incomeId = checkbox.value;
-            break;
-        }
-    }
-
-    if (incomeId) {
-
-        location.href = "/income/update?incomeId=${incomeId}";
-    } else {
-        alert('체크된 항목이 없습니다.');
-    }
+        document.updateForm.action = "/income/update";
+        document.updateForm.method = "post";
+        document.updateForm.submit();
 
   }
 
-   document.addEventListener('DOMContentLoaded', function () {
-    const searchedDate = /*[[${searchedDate}]]*/ '[[${searchedDate}]]'; // 서버에서 전달된 searchedDate를 가져옴
 
-    if (searchedDate) {
-      const [year, month] = searchedDate.split('-');
-      currentYear = parseInt(year, 10);
-      currentMonth = parseInt(month, 10);
-    }
-
-    updateMonthYearDisplay();
-  });
-
-  function updateMonthYearDisplay() {
-    const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
-    document.getElementById('currentMonthYear').innerText = `${monthNames[currentMonth - 1]} ${currentYear}`;
-    
-  }
 </script>
 </body>
 </html>

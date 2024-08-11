@@ -29,7 +29,6 @@ public class MemberTypeCheck {
         }
     }
 
-
     private Map<String, Object> printUserDetails(UserDetails userDetails) {
         Map<String, Object> userInfo = new HashMap<>();
         // 일반 로그인 사용자 정보 처리
@@ -55,7 +54,5 @@ public class MemberTypeCheck {
         }
         return userInfo;
     }
-
-
 }
 

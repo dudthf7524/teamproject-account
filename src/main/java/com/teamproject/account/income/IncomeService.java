@@ -16,7 +16,7 @@ public class IncomeService {
     }
 
     public List<IncomeDTO> findAllByregDtContains(String formattedDate) {
-        List<IncomeEntity> incomeEntityList = incomeRepository.findAllByregDtContains(formattedDate);
+        List<IncomeEntity> incomeEntityList = incomeRepository.findAllByRegDtContainsOrderByRegDtAsc(formattedDate);
         List<IncomeDTO> incomeDTOList = new ArrayList<>();
 
         for(IncomeEntity incomeEntity : incomeEntityList){
@@ -25,4 +25,15 @@ public class IncomeService {
         }
         return incomeDTOList;
     }
+
+    public void updateForm(IncomeDTO incomeDTO) {
+        IncomeEntity incomeEntity = IncomeEntity.toIncomeEntity(incomeDTO);
+        incomeRepository.save(incomeEntity);
+    }
+
+    public void deleteById(Long incomeId) {
+        incomeRepository.deleteById(incomeId);
+    }
+
+
 }

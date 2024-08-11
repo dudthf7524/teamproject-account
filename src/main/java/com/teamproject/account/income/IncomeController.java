@@ -17,7 +17,6 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
-
 public class IncomeController {
 
     private final IncomeService incomeService;
@@ -26,12 +25,7 @@ public class IncomeController {
     public String write(Model model){
         LocalDate today = LocalDate.now();
         String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM"));
-        System.out.println(formattedDate);
         List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(formattedDate);
-        String year = formattedDate.substring(0,4);
-        String month = formattedDate.substring(5,7);
-        System.out.println(year);
-        System.out.println(month);
         model.addAttribute("searchedDate", formattedDate);
         model.addAttribute("incomeDTOList", incomeDTOList);
         return "/income/write";
@@ -46,19 +40,73 @@ public class IncomeController {
         incomeDTO.setMemberNo(memberNo);
         incomeService.save(incomeDTO);
 
-        System.out.println("accountDTO = " + incomeDTO);
+        String data = incomeDTO.getRegDt();
+        String dataupdate = data.substring(0,7);
+        incomeDTO.setRegDt(dataupdate);
 
-        return "redirect:/income/write";
+        return "redirect:/income/list?regDt="+incomeDTO.getRegDt();
     }
 
     @GetMapping("/income/list")
-    public String list(Model model){
-        LocalDate today = LocalDate.now();
-        String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM"));
-        System.out.println(formattedDate);
-        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(formattedDate);
+    public String list(Model model, @ModelAttribute IncomeDTO incomeDTO){
+        if (incomeDTO.getRegDt() == null){
+            LocalDate today = LocalDate.now();
+            String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+            incomeDTO.setRegDt(formattedDate);
+        }
+
+        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(incomeDTO.getRegDt());
 
         model.addAttribute("incomeDTOList", incomeDTOList);
+        model.addAttribute("searchedDate", incomeDTO.getRegDt());
+        model.addAttribute("type", "income");
+        return "/income/list";
+    }
+
+    @GetMapping("/income/update/{incomeId}")
+    public String update(@ModelAttribute IncomeDTO incomeDTO, Model model){
+
+        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(incomeDTO.getRegDt());
+        model.addAttribute("incomeDTOList", incomeDTOList);
+        model.addAttribute("incomeId", incomeDTO.getIncomeId());
+        model.addAttribute("regDt", incomeDTO.getRegDt());
+        return "/income/update";
+    }
+
+    @PostMapping("/income/update")
+    public String updateForm(@ModelAttribute IncomeDTO incomeDTO, Authentication auth){
+        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
+        Map<String,Object> result = memberTypeCheck.check(auth);
+        Long memberNo = (Long)result.get("memberNo");
+
+        incomeDTO.setMemberNo(memberNo);
+
+        incomeService.updateForm(incomeDTO);
+        String data = incomeDTO.getRegDt();
+        String dataupdate = data.substring(0,7);
+
+        incomeDTO.setRegDt(dataupdate);
+
+        return "redirect:/income/list?regDt="+incomeDTO.getRegDt();
+    }
+
+    @GetMapping("/income/delete/{incomeId}")
+    public String delete(@ModelAttribute IncomeDTO incomeDTO){
+        incomeService.deleteById(incomeDTO.getIncomeId());
+
+        String data = incomeDTO.getRegDt();
+        String dataupdate = data.substring(0,7);
+        incomeDTO.setRegDt(dataupdate);
+
+        return "redirect:/income/list?regDt="+incomeDTO.getRegDt();
+    }
+
+    @PostMapping("/income/search")
+    public String search(Model model, @ModelAttribute IncomeDTO incomeDTO){
+        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(incomeDTO.getRegDt());
+        model.addAttribute("incomeDTOList", incomeDTOList);
+        model.addAttribute("searchedDate", incomeDTO.getRegDt());
+        model.addAttribute("type", "income");
         return "/income/list";
     }
 }
