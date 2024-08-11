@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface IncomeRepository extends JpaRepository<IncomeEntity, Long> {
 
-    List<IncomeEntity> findAllByregDtContains(String regDt);
+    List<IncomeEntity> findAllByRegDtContainsOrderByRegDtAsc(String regDt);
 }

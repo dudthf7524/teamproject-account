@@ -119,7 +119,7 @@
     <div class="sidebar">
         <ul>
             <li><a href="/account/calender">달력</a></li>
-            <li><a href="/income/list">수입/지출</a></li>
+            <li><a href="/outcome/list">수입/지출</a></li>
             <li><a href="#">보고서</a></li>
         </ul>
     </div>
@@ -138,31 +138,32 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="income: ${incomeDTOList}">
-                    <div th:if="${income.incomeId == incomeId}">
+                <tr th:each="outcome: ${outcomeDTOList}">
+                    <div th:if="${outcome.outcomeId == outcomeId}">
 
-                        <td><input type="date" th:value="${income.regDt}" name="regDt"></td>
+                        <td><input type="date" th:value="${outcome.regDt}" name="regDt"></td>
                         <td>
-                            <select name="incomeCategoryId" th:value="${income.incomeCategoryName}" >
-                                <option value="11">용돈</option>
-                                <option value="22">월급</option>
+                            <select name="outcomeCategoryId" th:value="${outcome.outcomeCategoryName}" >
+                                <option value="11">생활비</option>
+                                <option value="22">교통비</option>
+                                <option value="33">월세</option>
                             </select>
                         </td>
-                        <td><input type="text" th:value="${income.price}" name="price"></td>
-                        <td><input type="text" th:value="${income.memo}" name="memo"></td>
+                        <td><input type="text" th:value="${outcome.price}" name="price"></td>
+                        <td><input type="text" th:value="${outcome.memo}" name="memo"></td>
                     </div>
 
-                    <div th:unless="${income.incomeId == incomeId}">
-                        <td th:text="${income.regDt}"></td>
-                        <td th:text="${income.incomeCategoryName}"></td>
-                        <td th:text="${income.price}"></td>
-                        <td th:text="${income.memo}"></td>
+                    <div th:unless="${outcome.outcomeId == outcomeId}">
+                        <td th:text="${outcome.regDt}"></td>
+                        <td th:text="${outcome.outcomeCategoryName}"></td>
+                        <td th:text="${outcome.price}"></td>
+                        <td th:text="${outcome.memo}"></td>
                     </div>
                 </tr>
                 </tbody>
             </table>
             <div class="action-buttons">
-                <td><input type="hidden" th:value="${incomeId}" name="incomeId"></td>
+                <td><input type="hidden" th:value="${outcomeId}" name="outcomeId"></td>
                 <button class="update" onclick="update();">수정</button>
             </div>
         </form>
@@ -171,7 +172,7 @@
 
 <script>
     function update() {
-        document.updateForm.action = "/income/update";
+        document.updateForm.action = "/outcome/update";
         document.updateForm.method = "post";
         document.updateForm.submit();
 

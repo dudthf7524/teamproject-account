@@ -16,7 +16,7 @@ public class IncomeService {
     }
 
     public List<IncomeDTO> findAllByregDtContains(String formattedDate) {
-        List<IncomeEntity> incomeEntityList = incomeRepository.findAllByregDtContains(formattedDate);
+        List<IncomeEntity> incomeEntityList = incomeRepository.findAllByRegDtContainsOrderByRegDtAsc(formattedDate);
         List<IncomeDTO> incomeDTOList = new ArrayList<>();
 
         for(IncomeEntity incomeEntity : incomeEntityList){

@@ -108,16 +108,6 @@
             margin-left: 10px;
             cursor: pointer;
         }
-        .action-buttons .save {
-            background-color: #4caf50;
-            color: white;
-            border: none;
-        }
-        .action-buttons .delete {
-            background-color: #f44336;
-            color: white;
-            border: none;
-        }
     </style>
 </head>
 <body>
@@ -134,11 +124,7 @@
     </div>
     <div class="content">
         <div class="content-header">
-            <h2 id="currentMonthYear" th:text="${searchedDate}"></h2>
-            <div class="nav-buttons">
-                <button>&lt;</button>
-                <button>&gt;</button>
-            </div>
+            <h2>수입</h2>
         </div>
         <form name = "incomeForm">
             <table>
@@ -176,8 +162,6 @@
             </table>
             <div class="action-buttons">
                 <button class="save" onclick="save();">저장</button>
-                <button class="update" onclick="update();">수정</button>
-                <button class="delete" onclick="delete();">삭제</button>
             </div>
         </form>
     </div>
