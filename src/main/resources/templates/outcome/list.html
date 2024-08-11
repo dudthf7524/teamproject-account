@@ -200,28 +200,29 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="income: ${incomeDTOList}">
-                <td><input type="checkbox" name="incomeId" th:value="${income.incomeId}" ></td>
-                <td th:text="${income.regDt}"></td>
-                <td th:text="${income.incomeCategoryName}"></td>
-                <td th:text="${income.price}"></td>
-                <td th:text="${income.memo}"></td>
+            <tr th:each="outcome: ${outcomeDTOList}">
+                <td><input type="checkbox" name="outcomeId" th:value="${outcome.outcomeId}" ></td>
+                <td th:text="${outcome.regDt}"></td>
+                <td th:text="${outcome.outcomeCategoryName}"></td>
+                <td th:text="${outcome.price}"></td>
+                <td th:text="${outcome.memo}"></td>
             </tr>
             </tbody>
         </table>
         <div class="action-buttons">
             <button class="save" onclick="save();">추가</button>
-            <button class="update" onclick="incomeUpdate();">수정</button>
-            <button class="delete" onclick="incomeDelete();">삭제</button>
+            <button class="update" onclick="outcomeUpdate();">수정</button>
+            <button class="delete" onclick="outcomeDelete();">삭제</button>
         </div>
 
     </div>
 </div>
 
 <script>
- function save(){
+  function save(){
       location.href = `/outcome/write`;
   }
+
   let today = new Date();
   let year = today.getFullYear();
   let month = today.getMonth() + 1;
@@ -247,45 +248,45 @@
     updateMonthYearDisplay();
   }
 
-  function incomeUpdate() {
-    const checkboxes = document.querySelectorAll('input[name="incomeId"]');
-    let incomeId = null;
+  function outcomeUpdate() {
+    const checkboxes = document.querySelectorAll('input[name="outcomeId"]');
+    let outcomeId = null;
 
     for (let checkbox of checkboxes) {
       if (checkbox.checked) {
-        incomeId = checkbox.value;
+        outcomeId = checkbox.value;
         break;
       }
     }
 
-    if (incomeId) {
+    if (outcomeId) {
       const searchData = document.searchForm.regDt.value;  // 예: regDt에 입력된 값을 가져옴
-        location.href = `/income/update/${incomeId}?regDt=${encodeURIComponent(searchData)}`;
+        location.href = `/outcome/update/${outcomeId}?regDt=${encodeURIComponent(searchData)}`;
     } else {
       alert('체크된 항목이 없습니다.');
     }
   }
 
-  function incomeDelete() {
-    const checkboxes = document.querySelectorAll('input[name="incomeId"]');
-    let incomeId = null;
+  function outcomeDelete() {
+    const checkboxes = document.querySelectorAll('input[name="outcomeId"]');
+    let outcomeId = null;
 
     for (let checkbox of checkboxes) {
       if (checkbox.checked) {
-        incomeId = checkbox.value;
+        outcomeId = checkbox.value;
         break;
       }
     }
 
-    if (incomeId) {
-      location.href = `/income/delete/${incomeId}`;
+    if (outcomeId) {
+      location.href = `/outcome/delete/${outcomeId}`;
     } else {
       alert('체크된 항목이 없습니다.');
     }
   }
 
   function regDtSearch(){
-      document.searchForm.action = "/income/search";
+      document.searchForm.action = "/outcome/search";
       document.searchForm.method = "post";
       document.searchForm.submit();
   }
