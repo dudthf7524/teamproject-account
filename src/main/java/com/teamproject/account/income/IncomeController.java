@@ -20,12 +20,16 @@ import java.util.Map;
 public class IncomeController {
 
     private final IncomeService incomeService;
-
     @GetMapping("/income/write")
-    public String write(Model model){
+    public String write(@ModelAttribute IncomeDTO incomeDTO, Model model, Authentication auth){
+        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
+        Map<String,Object> result = memberTypeCheck.check(auth);
+        Long memberNo = (Long)result.get("memberNo");
+
         LocalDate today = LocalDate.now();
         String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM"));
-        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(formattedDate);
+
+        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(memberNo, incomeDTO.getRegDt());
         model.addAttribute("searchedDate", formattedDate);
         model.addAttribute("incomeDTOList", incomeDTOList);
         return "/income/write";
@@ -48,14 +52,18 @@ public class IncomeController {
     }
 
     @GetMapping("/income/list")
-    public String list(Model model, @ModelAttribute IncomeDTO incomeDTO){
+    public String list(Model model, @ModelAttribute IncomeDTO incomeDTO, Authentication auth){
+        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
+        Map<String,Object> result = memberTypeCheck.check(auth);
+        Long memberNo = (Long)result.get("memberNo");
+
         if (incomeDTO.getRegDt() == null){
             LocalDate today = LocalDate.now();
             String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM"));
             incomeDTO.setRegDt(formattedDate);
         }
 
-        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(incomeDTO.getRegDt());
+        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(memberNo, incomeDTO.getRegDt());
 
         model.addAttribute("incomeDTOList", incomeDTOList);
         model.addAttribute("searchedDate", incomeDTO.getRegDt());
@@ -64,9 +72,12 @@ public class IncomeController {
     }
 
     @GetMapping("/income/update/{incomeId}")
-    public String update(@ModelAttribute IncomeDTO incomeDTO, Model model){
+    public String update(@ModelAttribute IncomeDTO incomeDTO, Model model, Authentication auth){
+        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
+        Map<String,Object> result = memberTypeCheck.check(auth);
+        Long memberNo = (Long)result.get("memberNo");
 
-        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(incomeDTO.getRegDt());
+        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(memberNo, incomeDTO.getRegDt());
         model.addAttribute("incomeDTOList", incomeDTOList);
         model.addAttribute("incomeId", incomeDTO.getIncomeId());
         model.addAttribute("regDt", incomeDTO.getRegDt());
@@ -102,8 +113,12 @@ public class IncomeController {
     }
 
     @PostMapping("/income/search")
-    public String search(Model model, @ModelAttribute IncomeDTO incomeDTO){
-        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(incomeDTO.getRegDt());
+    public String search(Model model, @ModelAttribute IncomeDTO incomeDTO, Authentication auth){
+        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
+        Map<String,Object> result = memberTypeCheck.check(auth);
+        Long memberNo = (Long)result.get("memberNo");
+
+        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(memberNo, incomeDTO.getRegDt());
         model.addAttribute("incomeDTOList", incomeDTOList);
         model.addAttribute("searchedDate", incomeDTO.getRegDt());
         model.addAttribute("type", "income");
