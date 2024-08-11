@@ -1,6 +1,7 @@
 package com.teamproject.account.outcome;
 
 import com.teamproject.account.income.IncomeDTO;
+import com.teamproject.account.member.MemberTypeCheck;
 import com.teamproject.account.member.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+
 
 @Controller
 @RequiredArgsConstructor
@@ -32,9 +35,11 @@ public class OutcomeController {
 
     @PostMapping("/outcome/write")
     public String write(@ModelAttribute OutcomeDTO outcomeDTO, Authentication auth){
-        MyUserDetailsService.CustomUser result = (MyUserDetailsService.CustomUser) auth.getPrincipal();
+        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
+        Map<String,Object> result = memberTypeCheck.check(auth);
+        Long memberNo = (Long)result.get("memberNo");
 
-        outcomeDTO.setMemberNo(result.memberNo);
+        outcomeDTO.setMemberNo(memberNo);
         outcomeService.save(outcomeDTO);
         String data = outcomeDTO.getRegDt();
         String dataupdate = data.substring(0,7);
@@ -72,9 +77,11 @@ public class OutcomeController {
 
     @PostMapping("/outcome/update")
     public String updateForm(@ModelAttribute OutcomeDTO outcomeDTO, Authentication auth){
-        MyUserDetailsService.CustomUser result = (MyUserDetailsService.CustomUser) auth.getPrincipal();
+        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
+        Map<String,Object> result = memberTypeCheck.check(auth);
+        Long memberNo = (Long)result.get("memberNo");
 
-        outcomeDTO.setMemberNo(result.memberNo);
+        outcomeDTO.setMemberNo(memberNo);
         outcomeService.updateForm(outcomeDTO);
         String data = outcomeDTO.getRegDt();
         String dataupdate = data.substring(0,7);
@@ -85,8 +92,6 @@ public class OutcomeController {
     @GetMapping("/outcome/delete/{outcomeId}")
     public String delete(@ModelAttribute OutcomeDTO outcomeDTO){
         outcomeService.deleteById(outcomeDTO.getOutcomeId());
-
-
         String data = outcomeDTO.getRegDt();
         String dataupdate = data.substring(0,7);
         outcomeDTO.setRegDt(dataupdate);

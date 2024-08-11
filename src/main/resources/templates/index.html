@@ -9,18 +9,19 @@
     <form id="logout" action="/logout" method="post">
     </form>
 
-  <!--  <div sec:authorize="isAnonymous()"> &lt;!&ndash; 로그인 안한사람들만 보이게 &ndash;&gt;
+    <div sec:authorize="isAnonymous()"> <!-- 로그인 안한사람들만 보이게 -->
         <a href="/login">로그인</a>
         <a href="/member/join">회원가입</a>
-    </div>-->
+    </div>
 
-  <!--  <div sec:authorize="isAuthenticated()"> &lt;!&ndash; 로그인 한사람들만 보이게 &ndash;&gt;
-        <a href="#" onclick="document.getElementById('logout').submit();">Logout</a><br>
-        회원아이디: <span sec:authentication="principal.username"></span>
-    </div >-->
-    <a href="/member/join">회원가입</a>
-    <a href="/login">로그인</a>
     <a href="/income/list">가계부</a>
+
+    <div sec:authorize="isAuthenticated()"> <!-- 로그인 한사람들만 보이게 -->
+        <a href="#" onclick="document.getElementById('logout').submit();">Logout</a><br>
+        회원아이디: <span sec:authentication="principal.username"></span><br>
+        유저권한: <span sec:authentication="principal.authorities"></span><br>
+    </div >
+
 <br>
 </body>
 </html>

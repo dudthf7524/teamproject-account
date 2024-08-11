@@ -1,5 +1,6 @@
 package com.teamproject.account.income;
 
+import com.teamproject.account.member.MemberTypeCheck;
 import com.teamproject.account.member.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -12,10 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
-
 public class IncomeController {
 
     private final IncomeService incomeService;
@@ -32,9 +33,11 @@ public class IncomeController {
 
     @PostMapping("/income/write")
     public String write(@ModelAttribute IncomeDTO incomeDTO, Authentication auth){
-        MyUserDetailsService.CustomUser result = (MyUserDetailsService.CustomUser) auth.getPrincipal();
+        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
+        Map<String,Object> result = memberTypeCheck.check(auth);
+        Long memberNo = (Long)result.get("memberNo");
 
-        incomeDTO.setMemberNo(result.memberNo);
+        incomeDTO.setMemberNo(memberNo);
         incomeService.save(incomeDTO);
 
         String data = incomeDTO.getRegDt();
@@ -72,9 +75,11 @@ public class IncomeController {
 
     @PostMapping("/income/update")
     public String updateForm(@ModelAttribute IncomeDTO incomeDTO, Authentication auth){
+        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
+        Map<String,Object> result = memberTypeCheck.check(auth);
+        Long memberNo = (Long)result.get("memberNo");
 
-        MyUserDetailsService.CustomUser result = (MyUserDetailsService.CustomUser) auth.getPrincipal();
-        incomeDTO.setMemberNo(result.memberNo);
+        incomeDTO.setMemberNo(memberNo);
 
         incomeService.updateForm(incomeDTO);
         String data = incomeDTO.getRegDt();
@@ -87,8 +92,6 @@ public class IncomeController {
 
     @GetMapping("/income/delete/{incomeId}")
     public String delete(@ModelAttribute IncomeDTO incomeDTO){
-
-
         incomeService.deleteById(incomeDTO.getIncomeId());
 
         String data = incomeDTO.getRegDt();
