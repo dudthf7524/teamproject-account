@@ -143,10 +143,10 @@
 
                         <td><input type="date" th:value="${outcome.regDt}" name="regDt"></td>
                         <td>
-                            <select name="outcomeCategoryId" th:value="${outcome.outcomeCategoryName}" >
-                                <option value="11">생활비</option>
-                                <option value="22">교통비</option>
-                                <option value="33">월세</option>
+                            <select name="outcomeCategoryId">
+                                <option value="11" th:selected="${outcome.outcomeCategoryName == '생활비'}">생활비</option>
+                                <option value="22" th:selected="${outcome.outcomeCategoryName == '교통비'}">교통비</option>
+                                <option value="33" th:selected="${outcome.outcomeCategoryName == '월세'}">월세</option>
                             </select>
                         </td>
                         <td><input type="text" th:value="${outcome.price}" name="price"></td>
