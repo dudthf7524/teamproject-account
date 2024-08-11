@@ -85,7 +85,13 @@ public class OutcomeController {
     @GetMapping("/outcome/delete/{outcomeId}")
     public String delete(@ModelAttribute OutcomeDTO outcomeDTO){
         outcomeService.deleteById(outcomeDTO.getOutcomeId());
-        return "redirect:/outcome/list";
+
+
+        String data = outcomeDTO.getRegDt();
+        String dataupdate = data.substring(0,7);
+        outcomeDTO.setRegDt(dataupdate);
+
+        return "redirect:/outcome/list?regDt="+outcomeDTO.getRegDt();
     }
 
     @PostMapping("/outcome/search")

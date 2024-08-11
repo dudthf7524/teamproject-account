@@ -279,7 +279,8 @@
     }
 
     if (outcomeId) {
-      location.href = `/outcome/delete/${outcomeId}`;
+      const searchData = document.searchForm.regDt.value;  // 예: regDt에 입력된 값을 가져옴
+        location.href = `/outcome/delete/${outcomeId}?regDt=${encodeURIComponent(searchData)}`;
     } else {
       alert('체크된 항목이 없습니다.');
     }

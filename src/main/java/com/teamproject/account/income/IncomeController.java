@@ -39,7 +39,6 @@ public class IncomeController {
 
         String data = incomeDTO.getRegDt();
         String dataupdate = data.substring(0,7);
-
         incomeDTO.setRegDt(dataupdate);
 
         return "redirect:/income/list?regDt="+incomeDTO.getRegDt();
@@ -88,8 +87,15 @@ public class IncomeController {
 
     @GetMapping("/income/delete/{incomeId}")
     public String delete(@ModelAttribute IncomeDTO incomeDTO){
+
+
         incomeService.deleteById(incomeDTO.getIncomeId());
-        return "redirect:/income/list";
+
+        String data = incomeDTO.getRegDt();
+        String dataupdate = data.substring(0,7);
+        incomeDTO.setRegDt(dataupdate);
+
+        return "redirect:/income/list?regDt="+incomeDTO.getRegDt();
     }
 
     @PostMapping("/income/search")
