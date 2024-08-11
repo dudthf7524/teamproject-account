@@ -28,6 +28,7 @@ public class MyUserDetailsService implements UserDetailsService,OAuth2UserServic
  /*     DB에서 username을 가진 유저를 찾아와서
         return new User(유저아이디, 비번, 권한) 해주세요*/
         Optional<Member> member = memberRepository.findByUsername(username);
+        Member member1 = member.get();
         if(!member.isPresent()){
             throw new UsernameNotFoundException("아이디를 찾을수없음");
         }
@@ -36,7 +37,7 @@ public class MyUserDetailsService implements UserDetailsService,OAuth2UserServic
         List<GrantedAuthority> authority = new ArrayList<>();
         //권한을 추가할때는 new SimpleGrantedAuthority() 함수를 사용해야한다..
         authority.add(new SimpleGrantedAuthority("일반유저"));
-        return new User(user.getUsername(),user.getPassword(),authority);
+        return new CustomUserDetails(member1, null);
     }
 
     @Override
@@ -75,7 +76,6 @@ public class MyUserDetailsService implements UserDetailsService,OAuth2UserServic
             member.setPassword(generateRandomPassword());
             memberRepository.save(member);
         }
-
         // DefaultOAuth2User를 통해 OAuth2User와 UserDetails를 동시에 구현
         return new CustomUserDetails(member, oAuth2User.getAttributes());
     }

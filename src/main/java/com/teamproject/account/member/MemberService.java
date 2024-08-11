@@ -78,9 +78,8 @@ public class MemberService {
                 errors.put("email", "이메일을 다시 입력해주세요.");
             }
         }
-
-
-
         return errors;
     }
+    //구글로그인 , 일반로그인
+
 }

@@ -13,11 +13,13 @@
             <a href="/member/join">회원가입</a>
         </div>
 
-        <div sec:authorize="isAuthenticated()"> <!-- 로그인 한사람들만 보이게 -->
-            <a href="#" onclick="document.getElementById('logout').submit();">Logout</a><br>
-            회원아이디: <span sec:authentication="principal.username"></span><br>
-            유저권한: <span sec:authentication="principal.authorities"></span><br>
-        </div >
+    <a href="/income/write">가계부</a>
+
+    <div sec:authorize="isAuthenticated()"> <!-- 로그인 한사람들만 보이게 -->
+        <a href="#" onclick="document.getElementById('logout').submit();">Logout</a><br>
+        회원아이디: <span sec:authentication="principal.username"></span><br>
+        유저권한: <span sec:authentication="principal.authorities"></span><br>
+    </div >
 <br>
 </body>
 </html>
