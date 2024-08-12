@@ -19,6 +19,7 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class IncomeController {
+
     private final IncomeService incomeService;
 
         public Long memberNoMethod(Authentication auth){
