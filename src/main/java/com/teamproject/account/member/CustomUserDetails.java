@@ -18,7 +18,6 @@ public class CustomUserDetails extends User implements OAuth2User {
         this.member = member;
         this.attributes = attributes;
     }
-
     @Override
     public Map<String, Object> getAttributes() {
         return attributes;
