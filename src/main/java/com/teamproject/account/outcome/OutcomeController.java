@@ -22,16 +22,19 @@ import java.util.Map;
 public class OutcomeController {
     private final OutcomeService outcomeService;
 
+    public Long memberNoMethod(Authentication auth){
+        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
+        Map<String, Object> result = memberTypeCheck.check(auth);
+        Long memberNo = (Long) result.get("memberNo");
+        return memberNo;
+    }
+
     @GetMapping("/outcome/write")
     public String write(@ModelAttribute OutcomeDTO outcomeDTO, Model model, Authentication auth){
-        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
-        Map<String,Object> result = memberTypeCheck.check(auth);
-        Long memberNo = (Long)result.get("memberNo");
-
         LocalDate today = LocalDate.now();
         String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM"));
 
-        List<OutcomeDTO> outcomeDTOList = outcomeService.findAllByregDtContains(memberNo, outcomeDTO.getRegDt());
+        List<OutcomeDTO> outcomeDTOList = outcomeService.findAllByregDtContains(memberNoMethod(auth), outcomeDTO.getRegDt());
         model.addAttribute("searchedDate", formattedDate);
         model.addAttribute("outcomeDTOList", outcomeDTOList);
         return "/outcome/write";
@@ -39,11 +42,7 @@ public class OutcomeController {
 
     @PostMapping("/outcome/write")
     public String write(@ModelAttribute OutcomeDTO outcomeDTO, Authentication auth){
-        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
-        Map<String,Object> result = memberTypeCheck.check(auth);
-        Long memberNo = (Long)result.get("memberNo");
-
-        outcomeDTO.setMemberNo(memberNo);
+        outcomeDTO.setMemberNo(memberNoMethod(auth));
         outcomeService.save(outcomeDTO);
         String data = outcomeDTO.getRegDt();
         String dataupdate = data.substring(0,7);
@@ -54,17 +53,12 @@ public class OutcomeController {
 
     @GetMapping("/outcome/list")
     public String list(Model model, @ModelAttribute OutcomeDTO outcomeDTO, Authentication auth){
-        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
-        Map<String,Object> result = memberTypeCheck.check(auth);
-        Long memberNo = (Long)result.get("memberNo");
-
         if(outcomeDTO.getRegDt() == null){
             LocalDate today = LocalDate.now();
             String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM"));
             outcomeDTO.setRegDt(formattedDate);
         }
-        List<OutcomeDTO> outcomeDTOList = outcomeService.findAllByregDtContains(memberNo, outcomeDTO.getRegDt());
-
+        List<OutcomeDTO> outcomeDTOList = outcomeService.findAllByregDtContains(memberNoMethod(auth), outcomeDTO.getRegDt());
         model.addAttribute("outcomeDTOList", outcomeDTOList);
         model.addAttribute("searchedDate", outcomeDTO.getRegDt());
         model.addAttribute("type", "outcome");
@@ -73,14 +67,10 @@ public class OutcomeController {
 
     @GetMapping("/outcome/update/{outcomeId}")
     public String update(@ModelAttribute OutcomeDTO outcomeDTO, Model model, Authentication auth){
-        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
-        Map<String,Object> result = memberTypeCheck.check(auth);
-        Long memberNo = (Long)result.get("memberNo");
-
         LocalDate today = LocalDate.now();
         String formattedDate = today.format(DateTimeFormatter.ofPattern(outcomeDTO.getRegDt()));
 
-        List<OutcomeDTO> outcomeDTOList = outcomeService.findAllByregDtContains(memberNo, outcomeDTO.getRegDt());
+        List<OutcomeDTO> outcomeDTOList = outcomeService.findAllByregDtContains(memberNoMethod(auth), outcomeDTO.getRegDt());
         model.addAttribute("outcomeDTOList", outcomeDTOList);
         model.addAttribute("outcomeId", outcomeDTO.getOutcomeId());
         model.addAttribute("regDt", outcomeDTO.getRegDt());
@@ -89,11 +79,7 @@ public class OutcomeController {
 
     @PostMapping("/outcome/update")
     public String updateForm(@ModelAttribute OutcomeDTO outcomeDTO, Authentication auth){
-        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
-        Map<String,Object> result = memberTypeCheck.check(auth);
-        Long memberNo = (Long)result.get("memberNo");
-
-        outcomeDTO.setMemberNo(memberNo);
+        outcomeDTO.setMemberNo(memberNoMethod(auth));
         outcomeService.updateForm(outcomeDTO);
         String data = outcomeDTO.getRegDt();
         String dataupdate = data.substring(0,7);
@@ -113,11 +99,7 @@ public class OutcomeController {
 
     @PostMapping("/outcome/search")
     public String search(Model model, @ModelAttribute OutcomeDTO outcomeDTO, Authentication auth){
-        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
-        Map<String,Object> result = memberTypeCheck.check(auth);
-        Long memberNo = (Long)result.get("memberNo");
-
-        List<OutcomeDTO> outcomeDTOList = outcomeService.findAllByregDtContains(memberNo, outcomeDTO.getRegDt());
+        List<OutcomeDTO> outcomeDTOList = outcomeService.findAllByregDtContains(memberNoMethod(auth), outcomeDTO.getRegDt());
         model.addAttribute("outcomeDTOList", outcomeDTOList);
         model.addAttribute("searchedDate", outcomeDTO.getRegDt());
         model.addAttribute("type", "outcome");

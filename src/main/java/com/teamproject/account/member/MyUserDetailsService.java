@@ -1,4 +1,5 @@
 package com.teamproject.account.member;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,6 +15,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.*;
 
@@ -21,6 +23,7 @@ import java.util.*;
 @Service
 public class MyUserDetailsService implements UserDetailsService,OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     private final MemberRepository memberRepository;
+    private final HttpServletResponse response;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -43,8 +46,8 @@ public class MyUserDetailsService implements UserDetailsService,OAuth2UserServic
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
-        OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
+        OAuth2User oAuth2User = delegate.loadUser(userRequest);
         String provider = userRequest.getClientRegistration().getRegistrationId();
         String providerId ="";
         String email = "";
@@ -60,11 +63,22 @@ public class MyUserDetailsService implements UserDetailsService,OAuth2UserServic
              name = oAuth2User.getAttribute("properties.nickname");
         }
 
-        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+        Optional<Member> memberOptional = memberRepository.findByEmailOrUsername(email,email);
         Member member;
 
         if (memberOptional.isPresent()) {
-            member = memberOptional.get();
+            if(memberOptional.get().getProvider() == null){
+                try {
+                    response.setContentType("text/html; charset=UTF-8");
+                    response.getWriter().write("<script>alert('이미 가입된 계정이 있습니다. 로그인하세요.'); location.href='/login';</script>");
+                    response.getWriter().flush();
+                } catch (IOException e) {
+                    throw new OAuth2AuthenticationException("리다이렉트 중 에러 발생");
+                }
+                return null;
+            }else{
+                member = memberOptional.get();
+            }
         } else {
             // Google 계정을 통해 신규 사용자 등록
             member = new Member();

@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -18,110 +19,95 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class IncomeController {
-
     private final IncomeService incomeService;
-    @GetMapping("/income/write")
-    public String write(@ModelAttribute IncomeDTO incomeDTO, Model model, Authentication auth){
-        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
-        Map<String,Object> result = memberTypeCheck.check(auth);
-        Long memberNo = (Long)result.get("memberNo");
 
-        LocalDate today = LocalDate.now();
-        String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM"));
-
-        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(memberNo, incomeDTO.getRegDt());
-        model.addAttribute("searchedDate", formattedDate);
-        model.addAttribute("incomeDTOList", incomeDTOList);
-        return "/income/write";
-    }
-
-    @PostMapping("/income/write")
-    public String write(@ModelAttribute IncomeDTO incomeDTO, Authentication auth){
-        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
-        Map<String,Object> result = memberTypeCheck.check(auth);
-        Long memberNo = (Long)result.get("memberNo");
-
-        incomeDTO.setMemberNo(memberNo);
-        incomeService.save(incomeDTO);
-
-        String data = incomeDTO.getRegDt();
-        String dataupdate = data.substring(0,7);
-        incomeDTO.setRegDt(dataupdate);
-
-        return "redirect:/income/list?regDt="+incomeDTO.getRegDt();
-    }
-
-    @GetMapping("/income/list")
-    public String list(Model model, @ModelAttribute IncomeDTO incomeDTO, Authentication auth){
-        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
-        Map<String,Object> result = memberTypeCheck.check(auth);
-        Long memberNo = (Long)result.get("memberNo");
-
-        if (incomeDTO.getRegDt() == null){
-            LocalDate today = LocalDate.now();
-            String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM"));
-            incomeDTO.setRegDt(formattedDate);
+        public Long memberNoMethod(Authentication auth){
+            MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
+            Map<String, Object> result = memberTypeCheck.check(auth);
+            Long memberNo = (Long) result.get("memberNo");
+            return memberNo;
         }
 
-        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(memberNo, incomeDTO.getRegDt());
+        @GetMapping("/income/write")
+        public String write (@ModelAttribute IncomeDTO incomeDTO, Model model, Authentication auth){
+            LocalDate today = LocalDate.now();
+            String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM"));
 
-        model.addAttribute("incomeDTOList", incomeDTOList);
-        model.addAttribute("searchedDate", incomeDTO.getRegDt());
-        model.addAttribute("type", "income");
-        return "/income/list";
-    }
+            List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(memberNoMethod(auth), incomeDTO.getRegDt());
+            model.addAttribute("searchedDate", formattedDate);
+            model.addAttribute("incomeDTOList", incomeDTOList);
+            return "/income/write";
+        }
 
-    @GetMapping("/income/update/{incomeId}")
-    public String update(@ModelAttribute IncomeDTO incomeDTO, Model model, Authentication auth){
-        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
-        Map<String,Object> result = memberTypeCheck.check(auth);
-        Long memberNo = (Long)result.get("memberNo");
+        @PostMapping("/income/write")
+        public String write (@ModelAttribute IncomeDTO incomeDTO, Authentication auth){
 
-        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(memberNo, incomeDTO.getRegDt());
-        model.addAttribute("incomeDTOList", incomeDTOList);
-        model.addAttribute("incomeId", incomeDTO.getIncomeId());
-        model.addAttribute("regDt", incomeDTO.getRegDt());
-        return "/income/update";
-    }
+            incomeDTO.setMemberNo(memberNoMethod(auth));
+            incomeService.save(incomeDTO);
 
-    @PostMapping("/income/update")
-    public String updateForm(@ModelAttribute IncomeDTO incomeDTO, Authentication auth){
-        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
-        Map<String,Object> result = memberTypeCheck.check(auth);
-        Long memberNo = (Long)result.get("memberNo");
+            String data = incomeDTO.getRegDt();
+            String dataupdate = data.substring(0, 7);
+            incomeDTO.setRegDt(dataupdate);
 
-        incomeDTO.setMemberNo(memberNo);
+            return "redirect:/income/list?regDt=" + incomeDTO.getRegDt();
+        }
 
-        incomeService.updateForm(incomeDTO);
-        String data = incomeDTO.getRegDt();
-        String dataupdate = data.substring(0,7);
+        @GetMapping("/income/list")
+        public String list (Model model, @ModelAttribute IncomeDTO incomeDTO, Authentication auth){
+            if (incomeDTO.getRegDt() == null) {
+                LocalDate today = LocalDate.now();
+                String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+                incomeDTO.setRegDt(formattedDate);
+            }
+            List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(memberNoMethod(auth), incomeDTO.getRegDt());
+            model.addAttribute("incomeDTOList", incomeDTOList);
+            model.addAttribute("searchedDate", incomeDTO.getRegDt());
+            model.addAttribute("type", "income");
+            return "/income/list";
+        }
 
-        incomeDTO.setRegDt(dataupdate);
+        @GetMapping("/income/update/{incomeId}")
+        public String update (@ModelAttribute IncomeDTO incomeDTO, Model model, Authentication auth){
 
-        return "redirect:/income/list?regDt="+incomeDTO.getRegDt();
-    }
+            List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(memberNoMethod(auth), incomeDTO.getRegDt());
+            model.addAttribute("incomeDTOList", incomeDTOList);
+            model.addAttribute("incomeId", incomeDTO.getIncomeId());
+            model.addAttribute("regDt", incomeDTO.getRegDt());
+            return "/income/update";
+        }
 
-    @GetMapping("/income/delete/{incomeId}")
-    public String delete(@ModelAttribute IncomeDTO incomeDTO){
-        incomeService.deleteById(incomeDTO.getIncomeId());
+        @PostMapping("/income/update")
+        public String updateForm (@ModelAttribute IncomeDTO incomeDTO, Authentication auth){
+            incomeDTO.setMemberNo(memberNoMethod(auth));
 
-        String data = incomeDTO.getRegDt();
-        String dataupdate = data.substring(0,7);
-        incomeDTO.setRegDt(dataupdate);
+            incomeService.updateForm(incomeDTO);
+            String data = incomeDTO.getRegDt();
+            String dataupdate = data.substring(0, 7);
 
-        return "redirect:/income/list?regDt="+incomeDTO.getRegDt();
-    }
+            incomeDTO.setRegDt(dataupdate);
 
-    @PostMapping("/income/search")
-    public String search(Model model, @ModelAttribute IncomeDTO incomeDTO, Authentication auth){
-        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
-        Map<String,Object> result = memberTypeCheck.check(auth);
-        Long memberNo = (Long)result.get("memberNo");
+            return "redirect:/income/list?regDt=" + incomeDTO.getRegDt();
+        }
 
-        List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(memberNo, incomeDTO.getRegDt());
-        model.addAttribute("incomeDTOList", incomeDTOList);
-        model.addAttribute("searchedDate", incomeDTO.getRegDt());
-        model.addAttribute("type", "income");
-        return "/income/list";
-    }
+        @GetMapping("/income/delete/{incomeId}")
+        public String delete (@ModelAttribute IncomeDTO incomeDTO){
+            incomeService.deleteById(incomeDTO.getIncomeId());
+
+            String data = incomeDTO.getRegDt();
+            String dataupdate = data.substring(0, 7);
+            incomeDTO.setRegDt(dataupdate);
+
+            return "redirect:/income/list?regDt=" + incomeDTO.getRegDt();
+        }
+
+        @PostMapping("/income/search")
+        public String search (Model model, @ModelAttribute IncomeDTO incomeDTO, Authentication auth){
+
+            List<IncomeDTO> incomeDTOList = incomeService.findAllByregDtContains(memberNoMethod(auth), incomeDTO.getRegDt());
+            model.addAttribute("incomeDTOList", incomeDTOList);
+            model.addAttribute("searchedDate", incomeDTO.getRegDt());
+            model.addAttribute("type", "income");
+            return "/income/list";
+        }
+
 }
