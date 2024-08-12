@@ -12,8 +12,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OutcomeService {
     private final OutcomeRepository outcomeRepository;
-    public List<OutcomeDTO> findAllByregDtContains(String formattedDate) {
-        List<OutcomeEntity> outcomeEntityList = outcomeRepository.findAllByRegDtContainsOrderByRegDtAsc(formattedDate);
+    public List<OutcomeDTO> findAllByregDtContains(long memberNo, String formattedDate) {
+        List<OutcomeEntity> outcomeEntityList = outcomeRepository.findAllByMemberNoAndRegDtContainsOrderByRegDtAsc(memberNo, formattedDate);
         List<OutcomeDTO>  outcomeDTOList = new ArrayList<>();
 
         for(OutcomeEntity outcomeEntity : outcomeEntityList){

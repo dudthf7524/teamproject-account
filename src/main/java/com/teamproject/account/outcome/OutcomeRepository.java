@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface OutcomeRepository extends JpaRepository<OutcomeEntity, Long> {
-    List<OutcomeEntity> findAllByRegDtContainsOrderByRegDtAsc(String regDt);
+    List<OutcomeEntity> findAllByMemberNoAndRegDtContainsOrderByRegDtAsc(long memberNo, String regDt);
 }

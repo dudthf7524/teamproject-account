@@ -254,7 +254,8 @@
 
 <script>
  function save(){
-      location.href = `/outcome/write`;
+ const searchData = document.searchForm.regDt.value;  // 예: regDt에 입력된 값을 가져옴
+      location.href = `/income/write?regDt=${encodeURIComponent(searchData)}`;
   }
   let today = new Date();
   let year = today.getFullYear();
