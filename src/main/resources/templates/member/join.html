@@ -126,7 +126,6 @@
                         formData[$(this).attr('name')] = $(this).val();
                     }
                 });
-
                 // 입력된 필드가 없는 경우 AJAX 요청을 보내지 않음
                 if (Object.keys(formData).length > 0) {
                     formData['joinCode'] = 'no';

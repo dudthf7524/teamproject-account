@@ -44,7 +44,6 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/") //로그아웃 성공시 페이지
                 .invalidateHttpSession(true) // 세션 무효화
                 .deleteCookies("JSESSIONID") // 쿠키 삭제
-
         );
         // OAuth2 로그인 설정 (구글 로그인)
        /* http.oauth2Login(oauth2Login ->
@@ -63,7 +62,6 @@ public class SecurityConfig {
                         .userService(myUserDetailsService) // OAuth2UserService 설정
                 )
         );
-
         return http.build();
     }
 
