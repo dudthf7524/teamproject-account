@@ -1,6 +1,7 @@
 package com.teamproject.account.income;
 
 import com.teamproject.account.member.MemberTypeCheck;
+import com.teamproject.account.member.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -8,7 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -17,11 +17,10 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/income")
 public class IncomeController {
 
     private final IncomeService incomeService;
-    @GetMapping("/write")
+    @GetMapping("/income/write")
     public String write(@ModelAttribute IncomeDTO incomeDTO, Model model, Authentication auth){
         MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
         Map<String,Object> result = memberTypeCheck.check(auth);
@@ -36,7 +35,7 @@ public class IncomeController {
         return "/income/write";
     }
 
-    @PostMapping("/write")
+    @PostMapping("/income/write")
     public String write(@ModelAttribute IncomeDTO incomeDTO, Authentication auth){
         MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
         Map<String,Object> result = memberTypeCheck.check(auth);
@@ -52,7 +51,7 @@ public class IncomeController {
         return "redirect:/income/list?regDt="+incomeDTO.getRegDt();
     }
 
-    @GetMapping("/list")
+    @GetMapping("/income/list")
     public String list(Model model, @ModelAttribute IncomeDTO incomeDTO, Authentication auth){
         MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
         Map<String,Object> result = memberTypeCheck.check(auth);
@@ -72,7 +71,7 @@ public class IncomeController {
         return "/income/list";
     }
 
-    @GetMapping("/update/{incomeId}")
+    @GetMapping("/income/update/{incomeId}")
     public String update(@ModelAttribute IncomeDTO incomeDTO, Model model, Authentication auth){
         MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
         Map<String,Object> result = memberTypeCheck.check(auth);
@@ -85,7 +84,7 @@ public class IncomeController {
         return "/income/update";
     }
 
-    @PostMapping("/update")
+    @PostMapping("/income/update")
     public String updateForm(@ModelAttribute IncomeDTO incomeDTO, Authentication auth){
         MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
         Map<String,Object> result = memberTypeCheck.check(auth);
@@ -102,7 +101,7 @@ public class IncomeController {
         return "redirect:/income/list?regDt="+incomeDTO.getRegDt();
     }
 
-    @GetMapping("/delete/{incomeId}")
+    @GetMapping("/income/delete/{incomeId}")
     public String delete(@ModelAttribute IncomeDTO incomeDTO){
         incomeService.deleteById(incomeDTO.getIncomeId());
 
@@ -113,7 +112,7 @@ public class IncomeController {
         return "redirect:/income/list?regDt="+incomeDTO.getRegDt();
     }
 
-    @PostMapping("/search")
+    @PostMapping("/income/search")
     public String search(Model model, @ModelAttribute IncomeDTO incomeDTO, Authentication auth){
         MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
         Map<String,Object> result = memberTypeCheck.check(auth);
