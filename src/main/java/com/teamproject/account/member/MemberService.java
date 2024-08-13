@@ -1,4 +1,5 @@
 package com.teamproject.account.member;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -110,7 +111,7 @@ public class MemberService {
     }
 
 
-    //이메일 인증관련
+    //중복이메일토큰 체크
     public Optional<Member> emailCheck(String email) throws Exception{
         Optional<Member> result = memberRepository.findByEmail(email);
         Map<String, String> errors = new HashMap<>();
@@ -124,7 +125,7 @@ public class MemberService {
         }
         return result;
     }
-
+    //이메일전송
     public void sendVerificationEmail(String email, String token) {
         // 이메일 제목
         String subject = "이메일 인증을 완료해주세요";
@@ -142,5 +143,9 @@ public class MemberService {
         // 이메일 전송
         mailSender.send(emailMessage);
     }
-
+    //회원가입처리후 해당이메일토큰 삭제
+    @Transactional
+    public void emailTokenDelete(String email){
+        emailTokenRepository.deleteByEmail(email);
+    }
 }
