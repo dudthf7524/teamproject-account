@@ -24,6 +24,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final EmailTokenRepository emailTokenRepository;
+    private final S3Service s3Service;
 
     @GetMapping("/member/join")
     public String join(Authentication auth) {
@@ -37,15 +38,15 @@ public class MemberController {
             @RequestParam("joinCode") String joinCode
             ) {
         try {
+            System.out.println("파일명: "+member.getMemberFile());
             String successMessage = memberService.join(member,joinCode);
-            return ResponseEntity.ok(Map.of("message", successMessage));
+            return ResponseEntity.ok(Map.of("message", successMessage,"email",member.getEmail()));
         } catch (ValidationException e) {
             return ResponseEntity.badRequest().body(e.getErrors());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         }
     }
-
     @PostMapping("/member/email-verify")
     public ResponseEntity<?> verifyEmail(@RequestParam String email) throws Exception {
         try{
@@ -94,6 +95,20 @@ public class MemberController {
     public String myPage(){
 
         return "member/mypage.html";
+    }
+
+    @GetMapping("/joinProc2/{email}")
+    public String joinProc2(@PathVariable String email){
+        memberService.emailTokenDelete(email);
+        return "redirect:/login";
+    }
+
+    @GetMapping("/presigned-url")
+    @ResponseBody
+    String getURL(@RequestParam String filename){
+        var result = s3Service.createPresignedUrl("test/"+filename);
+        System.out.println("S3URL: "+result);
+        return result;
     }
 
 }
