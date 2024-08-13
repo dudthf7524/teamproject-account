@@ -48,12 +48,39 @@
             color: red;
             font-size: 12px;
         }
+        .emailError{
+            color: red;
+            font-size: 12px;
+        }
 
         .input-error {
             border: 1px solid red;
         }
+
          #title{
             font-weight: bolder;
+        }
+
+         #emailVerifyButton {
+            width: 300px; /* Match the width of email input */
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            background-color: #ecdcff;
+            color: #7551a0;
+            cursor: pointer;
+            display: block;
+            margin-top: 10px; /* Space between email input and button */
+        }
+        #emailTokenInput {
+            width: 300px; /* Match the width of email input */
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            padding: 5px;
+            box-sizing: border-box;
+            display: none; /* Initially hidden */
+            margin-top: 10px; /* Space between verify button and token input */
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -91,8 +118,13 @@
         </tr>
         <tr>
             <td>
-                <br><span class="title">이메일</span><br><input type="text" placeholder="이메일입력" name="email">
+                <br><span class="title">이메일</span><br>
+                <input type="text" placeholder="이메일입력" name="email" id="email"/>
                 <div id="emailError" class="error"></div>
+                <br>
+                <button type="button" id="emailVerifyButton">이메일 인증</button>
+                <input type="text" placeholder="이메일로 받은 인증 코드를 입력하세요." name="emailTokenInput" id="emailTokenInput" style="display:none;">
+                <div id="emailVerifyMessage" class="emailError"></div>
             </td>
         </tr>
         <tr>
@@ -151,11 +183,17 @@
                                     var errorElementId = name + 'Error';
                                     if (errorResponse[name]) {
                                         $('#' + errorElementId).text(errorResponse[name]);
-                                         $input.css('border', '1px solid red');
+                                        $input.css('border', '1px solid red');
                                     } else {
                                         $('#' + errorElementId).text(''); // 오류 메시지 초기화
-                                         $input.css('border', '1px solid #ccc');
+                                        $input.css('border', '1px solid #ccc');
                                     }
+                                    //이메일 인증번호 칸다시 안보이게하고 안내문삭제
+                                    if(errorResponse.email){
+                                        $('#emailVerifyMessage').text('');
+                                        $('#emailTokenInput').hide('');
+                                    }
+
                                 }
                             });
                         }
@@ -178,7 +216,6 @@
 
                 // URL-encoded 형식으로 변환
                 var formData = $.param(formDataArray);
-
 
                 // 폼 데이터를 시리얼라이즈하여 객체로 변환
                 //var formData = $('#joinForm').serialize();
@@ -219,12 +256,56 @@
                             $('#emailError').text(errorResponse.email);
                             $('input[name="email"]').addClass('input-error');
                         }
+                        if(errorResponse.emailTokenInput){
+                            $('#emailTokenInput').show('');
+                            $('#emailError').text(errorResponse.emailTokenInput);
+                            $('input[name="emailTokenInput"]').addClass('input-error');
+                        }
 
                     }
                 });
             }
         });
     });
+
+
+    $(document).ready(function() {
+        $('#emailVerifyButton').on('click', function() {
+            var email = $('#email').val().trim();
+
+            if (email === '') {
+                $('#emailError').text('이메일을 입력해 주세요.');
+                return;
+            }
+
+            $.ajax({
+                url: '/member/email-verify',
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded',
+                data: { email: email },
+                success: function(response) {
+                    $('#emailVerifyMessage').text('이메일 인증 링크가 발송되었습니다. 메일함을 확인해 주세요.');
+                    $('#emailVerifyMessage').css('color', 'green');
+                    $('#emailError').text(''); // 이전 에러 메시지 초기화
+
+                    $('#emailTokenInput').show(''); //이메일토큰 입력창 드러내기
+                },
+                error: function(xhr) {
+                    var errorResponse = xhr.responseJSON;
+
+                    $('#emailVerifyMessage').text('');
+                    $('#emailTokenInput').hide('');
+                      //if (errorResponse && errorResponse.email) {
+                     //       $('#emailVerifyMessage').text(errorResponse.email);
+                    // } else {
+                     //   $('#emailVerifyMessage').text('이메일 인증 중 오류가 발생했습니다.');
+                   // }
+
+                }
+            });
+        });
+    });
+
 </script>
 
 </body>
