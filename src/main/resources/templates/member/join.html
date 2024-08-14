@@ -319,11 +319,6 @@
          $('#emailVerifyButton').on('click', function() {
              var email = $('#email').val().trim();
 
-             if (email === '') {
-                 $('#emailError').text('이메일을 입력해 주세요.');
-                 return;
-             }
-
              $.ajax({
                  url: '/member/email-verify',
                  type: 'POST',
@@ -341,12 +336,11 @@
 
                      $('#emailVerifyMessage').text('');
                      $('#emailTokenInput').hide('');
-                       //if (errorResponse && errorResponse.email) {
-                      //       $('#emailVerifyMessage').text(errorResponse.email);
-                     // } else {
-                      //   $('#emailVerifyMessage').text('이메일 인증 중 오류가 발생했습니다.');
-                    // }
-
+                     if (errorResponse && errorResponse.email) {
+                        $('#emailVerifyMessage').text(errorResponse.email);
+                     } else {
+                        $('#emailVerifyMessage').text('이메일 인증 중 오류가 발생했습니다.');
+                     }
                  }
              });
          });

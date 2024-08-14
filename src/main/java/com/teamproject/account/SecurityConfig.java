@@ -1,4 +1,6 @@
 package com.teamproject.account;
+import com.teamproject.account.member.CustomAuthenticationFailureHandler;
+import com.teamproject.account.member.CustomAuthenticationSuccessHandler;
 import com.teamproject.account.member.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -36,7 +40,9 @@ public class SecurityConfig {
         );
         http.formLogin((formLogin)
                 -> formLogin.loginPage("/login")
-                .defaultSuccessUrl("/")
+                .successHandler(authenticationSuccessHandler())
+                .failureHandler(customAuthenticationFailureHandler())
+                //.failureUrl("/loginFail")
         );
         http.logout(logout
                 -> logout
@@ -45,16 +51,6 @@ public class SecurityConfig {
                 .invalidateHttpSession(true) // 세션 무효화
                 .deleteCookies("JSESSIONID") // 쿠키 삭제
         );
-        // OAuth2 로그인 설정 (구글 로그인)
-       /* http.oauth2Login(oauth2Login ->
-                oauth2Login
-                        .loginPage("/login") // 로그인 페이지 설정
-                        .defaultSuccessUrl("/") // 로그인 성공 시 리디렉션할 URL
-                        .userInfoEndpoint(userInfoEndpoint ->
-                                userInfoEndpoint
-                                        .userService(myUserDetailsService) // OAuth2UserService 설정
-                        )
-        );*/
         http.oauth2Login(oauth2 -> oauth2
                 .loginPage("/login")
                 .defaultSuccessUrl("/")
@@ -63,6 +59,13 @@ public class SecurityConfig {
                 )
         );
         return http.build();
+    }
+
+    public AuthenticationFailureHandler customAuthenticationFailureHandler() {
+        return new CustomAuthenticationFailureHandler();
+    }
+    public AuthenticationSuccessHandler authenticationSuccessHandler(){
+        return new CustomAuthenticationSuccessHandler();
     }
 
 }

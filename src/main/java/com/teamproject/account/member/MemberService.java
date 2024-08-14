@@ -60,6 +60,7 @@ public class MemberService {
         }
         member.setPassword(passwordEncoder.encode(member.getPassword())); //비밀번호 암호화
         if(joinCode.equals("ok")){
+            member.setLoginFailCount(0);
             memberRepository.save(member); //DB저장
         }
         return "회원가입이 성공적으로 완료되었습니다.";
@@ -110,8 +111,15 @@ public class MemberService {
         return errors;
     }
 
-
-    //중복이메일토큰 체크
+//이메일 인증======================================================================================================
+    //아이디로 이메일찾기
+    public String emailSearch(String username){
+        Optional<Member> emailSearch = memberRepository.findByUsername(username);
+        String email = emailSearch.get().getEmail();
+        return email;
+    }
+    
+    //회원가입시 중복이메일토큰 체크
     public Optional<Member> emailCheck(String email) throws Exception{
         Optional<Member> result = memberRepository.findByEmail(email);
         Map<String, String> errors = new HashMap<>();
@@ -119,12 +127,26 @@ public class MemberService {
             errors.put("email", "등록된 이메일입니다.");
             throw new ValidationException(errors);
         }
+        //중복되는 이메일에 해당하는 토큰삭제
         Optional<EmailToken> emailTokenCheck = emailTokenRepository.findByEmail(email);
         if(emailTokenCheck.isPresent()){
             emailTokenRepository.delete(emailTokenCheck.get());
         }
         return result;
     }
+
+    //로그인시 중복이메일토큰 체크
+    public Optional<Member> emailCheck2(String email) throws Exception{
+        Map<String, String> errors = new HashMap<>();
+        Optional<Member> result = memberRepository.findByEmail(email);
+        //중복되는 이메일에 해당하는 토큰삭제
+        Optional<EmailToken> emailTokenCheck = emailTokenRepository.findByEmail(email);
+        if(emailTokenCheck.isPresent()){
+            emailTokenRepository.delete(emailTokenCheck.get());
+        }
+        return result;
+    }
+
     //이메일전송
     public void sendVerificationEmail(String email, String token) {
         // 이메일 제목
@@ -148,4 +170,50 @@ public class MemberService {
     public void emailTokenDelete(String email){
         emailTokenRepository.deleteByEmail(email);
     }
+    //로그인 이메일인증코드 확인시
+    public void emailTokenVerify(String email,String token){
+        Map<String, String> errors = new HashMap<>();
+        Optional<EmailToken> emailToken = emailTokenRepository.findByEmail(email);
+        Optional<Member> member = memberRepository.findByEmail(email);
+        if(emailToken.get().getToken().equals(token)){
+            member.get().setLoginFailCount(0);
+            memberRepository.save(member.get());
+        }else{
+            errors.put("emailTokenInput", "이메일 인증번호가 틀렸습니다.");
+            throw new ValidationException(errors);
+        }
+    }
+
+//로그인 실패횟수체크==================================================================================================
+    public int loginFailCount(String username){
+        Optional<Member> member = memberRepository.findByUsername(username);
+        if(member.isPresent()){
+            int count = member.get().getLoginFailCount();
+            if(count != 5) {
+                count++;
+                member.get().setLoginFailCount(count);
+                memberRepository.save(member.get());
+            }
+            return count;
+        }else{
+            return 0;
+        }
+    }
+//로그인 성공시 실패횟수 초기화==========================================================================================
+    public void loginSuccessCount(String username){
+        Optional<Member> member = memberRepository.findByUsername(username);
+        member.get().setLoginFailCount(0);
+        memberRepository.save(member.get());
+    }
+    public int count(String username){
+        Optional<Member> member = memberRepository.findByUsername(username);
+        if(member.isPresent()){
+            int count = member.get().getLoginFailCount();
+            return count;
+        }else{
+            return 0;
+        }
+    }
+
+
 }
