@@ -32,6 +32,8 @@ public class Member {
 
     private String providerId;
 
+    private int loginFailCount;
+
     //애는 테이블 필드와는 무관한 변수(테이블 필드에 추가안됨)
     private transient String passwordChk;
     private transient String emailTokenInput;

@@ -31,11 +31,10 @@ public class MyUserDetailsService implements UserDetailsService,OAuth2UserServic
  /*     DB에서 username을 가진 유저를 찾아와서
         return new User(유저아이디, 비번, 권한) 해주세요*/
         Optional<Member> member = memberRepository.findByUsername(username);
-        Member member1 = member.get();
         if(!member.isPresent()){
             throw new UsernameNotFoundException("아이디를 찾을수없음");
         }
-        var user = member.get();
+        Member member1 = member.get();
         //권한을 집어넣을떄는 List타입이 GrantedAuthority 가 들어가야한다~~!
         List<GrantedAuthority> authority = new ArrayList<>();
         //권한을 추가할때는 new SimpleGrantedAuthority() 함수를 사용해야한다..
