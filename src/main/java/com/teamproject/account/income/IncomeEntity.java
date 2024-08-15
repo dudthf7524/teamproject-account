@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Setter
 @Getter
@@ -22,7 +24,7 @@ public class IncomeEntity {
     private IncomeCategoryEntity incomeCategory;
 
     @Column(nullable = false)
-    private String price;
+    private Long price;
 
     @Column(nullable = false)
     private String memo;

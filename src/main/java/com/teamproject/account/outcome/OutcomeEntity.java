@@ -26,7 +26,7 @@ public class OutcomeEntity {
     private OutcomeCategoryEntity outcomeCategory;
 
     @Column(nullable = false)
-    private String price;
+    private Long price;
 
     @Column(nullable = false)
     private String memo;

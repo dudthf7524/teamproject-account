@@ -1,6 +1,5 @@
 package com.teamproject.account.outcome;
 
-import com.teamproject.account.income.IncomeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
