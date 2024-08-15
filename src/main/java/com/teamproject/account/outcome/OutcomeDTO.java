@@ -11,7 +11,7 @@ import lombok.*;
 public class OutcomeDTO {
     private Long outcomeId;
     private String outcomeCategoryName;
-    private String price;
+    private Long price;
     private String memo;
     private String regDt;
     private Long memberNo;

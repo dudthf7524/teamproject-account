@@ -2,6 +2,8 @@ package com.teamproject.account.income;
 
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -10,7 +12,7 @@ import lombok.*;
 public class IncomeDTO {
     private Long incomeId;
     private String incomeCategoryName;
-    private String price;
+    private Long price;
     private String memo;
     private String regDt;
     private Long memberNo;
