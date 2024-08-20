@@ -111,17 +111,11 @@
     </style>
 </head>
 <body>
-<div class="header">
-    <h1>가계부</h1>
-</div>
+<div class="header" th:include=".common/menu :: header"></div>
+
 <div class="container">
-    <div class="sidebar">
-        <ul>
-            <li><a href="/account/calender">달력</a></li>
-            <li><a href="/outcome/list">수입/지출</a></li>
-            <li><a href="#">보고서</a></li>
-        </ul>
-    </div>
+
+    <div class="sidebar" th:include=".common/menu :: sidebar"></div>
     <div class="content">
         <div class="content-header">
             <h2>지출</h2>

@@ -153,20 +153,36 @@
       border-radius: 8px;
         padding: 10px 20px;
     }
+    .header {
+      padding: 20px;
+      background-color: #ecdcff;
+      color: #7551a0;
+      display: flex; /* flexbox 레이아웃을 사용하여 정렬 */
+      justify-content: space-between; /* 요소들을 양쪽 끝으로 배치 */
+      align-items: center; /* 수직 가운데 정렬 */
+    }
+    .header .auth-links {
+      display: flex; /* 링크들을 가로로 배치 */
+      gap: 15px; /* 링크 사이의 간격 */
+    }
+
+    .header .auth-links a {
+      text-decoration: none;
+      color: #7551a0;
+      font-weight: bold;
+    }
+
+    .header .auth-links a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
-<div class="header">
-    <h1>가계부</h1>
-</div>
+<div class="header" th:include=".common/menu :: header"></div>
+
 <div class="container">
-    <div class="sidebar">
-        <ul>
-            <li><a href="/account/calender">달력</a></li>
-            <li><a href="/income/list">수입/지출</a></li>
-            <li><a href="/outcome/report">보고서</a></li>
-        </ul>
-    </div>
+
+    <div class="sidebar" th:include=".common/menu :: sidebar"></div>
     <div class="content">
         <div class="content-header">
             <div class="nav-links">
