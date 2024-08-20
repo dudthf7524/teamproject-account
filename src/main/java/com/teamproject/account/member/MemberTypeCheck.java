@@ -28,7 +28,6 @@ public class MemberTypeCheck {
             return unknownUser;
         }
     }
-
     private Map<String, Object> printUserDetails(UserDetails userDetails) {
         Map<String, Object> userInfo = new HashMap<>();
         // 일반 로그인 사용자 정보 처리
