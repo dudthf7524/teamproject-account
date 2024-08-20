@@ -178,8 +178,10 @@
   </style>
 </head>
 <body>
+
 <form id="logout" action="/logout" method="post">
 </form>
+
 <div class="header">
     <h1>가계부</h1>
     <div class="auth-links" sec:authorize="isAnonymous()">
@@ -187,7 +189,9 @@
         <a href="/login">로그인</a>
     </div>
     <div class="auth-links" sec:authorize="isAuthenticated()">
+        <span sec:authentication="principal.memberName"></span>
         <a href="#" onclick="document.getElementById('logout').submit();">로그아웃</a><br>
+        <a href="#" onclick="window.location.href='/member/mypage'">마이페이지</a>
     </div>
 </div>
 <div class="container">

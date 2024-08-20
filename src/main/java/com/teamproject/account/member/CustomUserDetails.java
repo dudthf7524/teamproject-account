@@ -31,4 +31,8 @@ public class CustomUserDetails extends User implements OAuth2User {
     public Long getMemberNo() {
         return member.getMemberNo(); // memberNo를 반환하는 메서드 추가
     }
+
+    public String getMemberName() {
+        return member.getMemberName(); // memberName을 반환하는 메서드 추가
+    }
 }

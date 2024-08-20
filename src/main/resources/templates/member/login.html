@@ -30,8 +30,8 @@
         #title{
             font-weight: bolder;
         }
-        #login{
-            width: 310px;
+        #login,#join{
+            width: 155px;
             height: 50px;
             border-radius: 10px;
             border: 1px solid #ccc;
@@ -41,7 +41,7 @@
             font-weight: bolder;
 
         }
-        #login:hover {
+        #login,#join:hover {
             cursor: pointer;
         }
         .error {
@@ -122,10 +122,11 @@
         <tr>
             <td>
                 <br><input type="password" placeholder="비밀번호"name="password"><br>
+
                 <div th:if="${param.error}" class="error">
                     아이디 또는 비밀번호가 틀립니다.
                 </div>
-                <div th:if="${count != 5}">
+                <div th:if="${count < 5}">
                     <span th:text="${loginCount}" class="error"></span>
                 </div>
                 <div th:if="${count == 5}" class="error">
@@ -136,6 +137,7 @@
         <tr align="center">
             <td>
                 <br><button id="login">로그인</button>
+                <button type="button" id="join" onclick="location.href='/member/join'">회원가입</button>
             </td>
         </tr>
         <tr align="center">
@@ -152,7 +154,6 @@
                     <br><input type="text" placeholder="이메일로 받은 인증 코드를 입력하세요." name="emailTokenInput" id="emailTokenInput" style="display:none;"/>
                     <br><div id="emailVerifyMessage" class="emailError"></div>
                     <button type="button" id="emailTokenVerifyButton" style="display:none;">인증코드 작성완료</button>
-
                 </div>
             </td>
         </tr>
@@ -164,7 +165,6 @@
     $(document).ready(function() {
          $('#emailVerifyButton').on('click', function() {
              var email = $('#email').val().trim();
-
              $.ajax({
                  url: '/member/email-verify2',
                  type: 'POST',
@@ -219,7 +219,27 @@
             });
         });
 
+        // URL의 쿼리 파라미터를 읽는 함수
+        function getQueryParam(param) {
+            let urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
 
+        // URL에서 특정 쿼리 파라미터 제거 함수
+        function removeQueryParam(param) {
+            let url = new URL(window.location.href);
+            url.searchParams.delete(param);
+            window.history.replaceState({}, document.title, url.pathname);
+        }
+
+        // 페이지가 로드되면 실행되는 스크립트
+        window.onload = function() {
+            let error = getQueryParam('error');
+            if (error === 'unauthorized') {
+                alert('로그인이 필요한 페이지입니다.');
+                removeQueryParam('error');  // 경고창이 뜬 후 쿼리 파라미터를 제거합니다.
+            }
+        };
 </script>
 </body>
 </html>

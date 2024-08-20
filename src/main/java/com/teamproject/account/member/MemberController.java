@@ -1,16 +1,10 @@
 package com.teamproject.account.member;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +12,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.SecureRandom;
 import java.util.Map;
-import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,7 +33,6 @@ public class MemberController {
             @RequestParam("joinCode") String joinCode
             ) {
         try {
-            System.out.println("파일명: "+member.getMemberFile());
             String successMessage = memberService.join(member,joinCode);
             return ResponseEntity.ok(Map.of("message", successMessage,"email",member.getEmail()));
         } catch (ValidationException e) {
@@ -49,6 +41,28 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         }
     }
+//회원수정 ==============================================================================================================
+    @PostMapping("/member/updateProc")
+    @ResponseBody
+    public ResponseEntity<?> updateProc(
+            @ModelAttribute Member member,
+            @RequestParam("joinCode") String joinCode
+    ) {
+        try {
+            Member member2 = memberService.findUserId(member.getUsername());
+            member2.setMemberName(member.getMemberName());
+            member2.setEmail(member.getEmail());
+            member2.setMemberFile(member.getMemberFile());
+            member2.setEmailTokenInput(member.getEmailTokenInput());
+            String successMessage = memberService.join(member2,joinCode);
+            return ResponseEntity.ok(Map.of("message", successMessage,"email",member.getEmail()));
+        } catch (ValidationException e) {
+            return ResponseEntity.badRequest().body(e.getErrors());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
+    }
+
 //이메일 인증=============================================================================================================
     //회원가입시 이메일 처리
     @PostMapping("/member/email-verify")
@@ -58,17 +72,16 @@ public class MemberController {
         }catch (ValidationException e){
             return ResponseEntity.badRequest().body(e.getErrors());
         }
-        // 이메일 인증 토큰 생성 및 발송
+        //이메일 인증 토큰 생성 및 발송
         String token = generateAlphaNumericToken().toString();
         memberService.sendVerificationEmail(email, token);
-        System.out.println("이메일토큰값: "+token);
-        // 토큰 저장
+        //토큰 저장
         EmailToken emailToken = new EmailToken(token, email);
         emailTokenRepository.save(emailToken);
         return ResponseEntity.ok(Map.of("message", "이메일 인증 링크가 발송되었습니다.","token", token));
     }
 
-    //로그인시 이메일 처리
+//로그인시 이메일 처리
     @PostMapping("/member/email-verify2")
     public ResponseEntity<?> verifyEmail2(@RequestParam String email) throws Exception {
         try{
@@ -79,13 +92,12 @@ public class MemberController {
         // 이메일 인증 토큰 생성 및 발송
         String token = generateAlphaNumericToken().toString();
         memberService.sendVerificationEmail(email, token);
-        System.out.println("이메일토큰값: "+token);
         // 토큰 저장
         EmailToken emailToken = new EmailToken(token, email);
         emailTokenRepository.save(emailToken);
         return ResponseEntity.ok(Map.of("message", "이메일 인증 링크가 발송되었습니다.","token", token));
     }
-    //로그인시 이메일코드 확인
+//로그인시 이메일코드 확인
     @PostMapping("/member/email-token-verify")
     public ResponseEntity<?> emailTokenVerify(@RequestParam String email,@RequestParam String token){
         try {
@@ -97,8 +109,7 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         }
     }
-
-    //이메일 토큰6자리 랜덤생성메소드
+//이메일 토큰6자리 랜덤생성메소드
     public String generateAlphaNumericToken() {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         SecureRandom random = new SecureRandom();
@@ -110,10 +121,16 @@ public class MemberController {
         }
         return token.toString();
     }
+//이메일 token 삭제
     @GetMapping("/joinProc2/{email}")
     public String joinProc2(@PathVariable String email){
         memberService.emailTokenDelete(email);
         return "redirect:/login";
+    }
+    @GetMapping("/updateProc2/{email}")
+    public String updateProc2(@PathVariable String email){
+        memberService.emailTokenDelete(email);
+        return "redirect:/member/mypage";
     }
 //로그인 처리=============================================================================================================
     @GetMapping("/login")
@@ -145,12 +162,69 @@ public class MemberController {
     }
 
 //회원 마이페이지=========================================================================================================
-    @GetMapping("/member/mypage")
-    public String myPage(){
 
-        return "member/mypage.html";
+    @GetMapping("/member/mypage")
+    public String myPage(Authentication auth,Model model){
+        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
+        Map<String, Object> result = memberTypeCheck.check(auth);
+        String username = (String) result.get("username");
+        try{
+            Member member = memberService.findUserId(username);
+            String email = member.getEmail();
+            if(member.getMemberFile() != null) {
+                String fileUrl = s3Service.getS3FileUrl(member.getMemberFile());
+                System.out.println("파일url: " + fileUrl);
+                model.addAttribute("fileUrl",fileUrl);
+            }
+            String usernameMasking = memberService.replaceSubstringWithChar(username,2,member.getUsername().length(),"*");
+            String emailMaking = memberService.replaceSubstringWithChar(email,2,member.getEmail().indexOf("@"),"*");
+            model.addAttribute("username",usernameMasking);
+            model.addAttribute("email", emailMaking);
+            model.addAttribute("member",member);
+        }catch (Exception e){
+
+        }
+        return "member/mypage";
+    }
+//회원 비밀번호 변경======================================================================================================
+    @GetMapping("/member/passwordChange")
+    public String passwordChange(){
+        return "member/passwordChange";
     }
 
+    @PostMapping("/member/passwordChangeProc")
+    public ResponseEntity<?> passwordChangeProc(@ModelAttribute Member member,Authentication auth){
+        try{
+            MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
+            Map<String, Object> result = memberTypeCheck.check(auth);
+            String username = (String) result.get("username");
+            member.setUsername(username);
+            String successMessage = memberService.newPasswordChange(member);
+            return ResponseEntity.ok(successMessage);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body((e.getMessage()));
+        }
+    }
+//회원탈퇴==============================================================================================================
+    @GetMapping("/member/delete")
+    public String delete(){
+        return "member/delete";
+    }
+
+    @PostMapping("/member/deleteProc")
+    public ResponseEntity<?> memberDelete(Authentication auth,@ModelAttribute Member member){
+
+        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
+        Map<String, Object> result = memberTypeCheck.check(auth);
+        String username = (String) result.get("username");
+        System.out.println(member);
+        try{
+            String successMessage = memberService.memberDelete(username,member);
+            return ResponseEntity.ok(successMessage);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body((e.getMessage()));
+        }
+    }
 //S3버킷에 파일저장=======================================================================================================
     @GetMapping("/presigned-url")
     @ResponseBody
@@ -158,6 +232,13 @@ public class MemberController {
         var result = s3Service.createPresignedUrl("test/"+filename);
         System.out.println("S3URL: "+result);
         return result;
+    }
+//S3버킷 파일삭제=========================================================================================================
+    @GetMapping("/deleteFile")
+    @ResponseBody
+    String deleteFile(@RequestParam String filename){
+       String result =  s3Service.createDeletePresignedUrl("test/"+filename);
+       return result;
     }
 
 }

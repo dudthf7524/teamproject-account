@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>In & Out</title>
@@ -108,11 +108,42 @@
             margin-left: 10px;
             cursor: pointer;
         }
+    .header {
+      padding: 20px;
+      background-color: #ecdcff;
+      color: #7551a0;
+      display: flex; /* flexbox 레이아웃을 사용하여 정렬 */
+      justify-content: space-between; /* 요소들을 양쪽 끝으로 배치 */
+      align-items: center; /* 수직 가운데 정렬 */
+    }
+    .header .auth-links {
+      display: flex; /* 링크들을 가로로 배치 */
+      gap: 15px; /* 링크 사이의 간격 */
+    }
+
+    .header .auth-links a {
+      text-decoration: none;
+      color: #7551a0;
+      font-weight: bold;
+    }
+
+    .header .auth-links a:hover {
+      text-decoration: underline;
+    }
     </style>
 </head>
 <body>
 <div class="header">
     <h1>가계부</h1>
+    <div class="auth-links" sec:authorize="isAnonymous()">
+        <a href="/member/join">회원가입</a>
+        <a href="/login">로그인</a>
+    </div>
+    <div class="auth-links" sec:authorize="isAuthenticated()">
+        <span sec:authentication="principal.memberName"></span>
+        <a href="#" onclick="document.getElementById('logout').submit();">로그아웃</a><br>
+        <a href="#" onclick="window.location.href='/member/mypage'">마이페이지</a>
+    </div>
 </div>
 <div class="container">
     <div class="sidebar">
