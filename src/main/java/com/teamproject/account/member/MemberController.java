@@ -173,7 +173,6 @@ public class MemberController {
             String email = member.getEmail();
             if(member.getMemberFile() != null) {
                 String fileUrl = s3Service.getS3FileUrl(member.getMemberFile());
-                System.out.println("파일url: " + fileUrl);
                 model.addAttribute("fileUrl",fileUrl);
             }
             String usernameMasking = memberService.replaceSubstringWithChar(username,2,member.getUsername().length(),"*");
@@ -210,7 +209,6 @@ public class MemberController {
     public String delete(){
         return "member/delete";
     }
-
     @PostMapping("/member/deleteProc")
     public ResponseEntity<?> memberDelete(Authentication auth,@ModelAttribute Member member){
 
