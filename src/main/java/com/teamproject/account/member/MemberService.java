@@ -55,13 +55,16 @@ public class MemberService {
                 errors.put("emailTokenInput", "이메일 인증번호가 틀렸습니다.");
             }
         } else {
-            if (!errors.containsKey("email") && ( joinCode.equals("update") && !emailCheck.isPresent()) ) {
+            if(joinCode.equals("ok")) {
+                if (!errors.containsKey("email")) {
                     errors.put("email", "이메일 인증은 필수입니다.");
+                }
+            }else if((joinCode.equals("update") && !emailCheck.isPresent())){
+                errors.put("email", "이메일 인증은 필수입니다.");
             }
         }
         errors = nullCheck(member,errors,joinCode); // join에서 넘어오는 널,공백체크
         errors = checkConstraint(member,errors,joinCode); //join에서 넘어오는값들 제약조건을 체크
-        System.out.println("에러메시지: "+errors);
         if (!errors.isEmpty()) {
             throw new ValidationException(errors); //예외발생한것들 모아서 ValidationException class에 예외던지기
         }

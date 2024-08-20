@@ -5,7 +5,6 @@
     <title>회원가입</title>
     <style>
             .header {
-
                 padding: 20px;
                 background-color: #ecdcff;
                 color: #7551a0;
@@ -354,6 +353,7 @@
     let userEmail = '[[${member.email}]]';
     let emailInput = $('#email').val();
     let fileUrl = '[[${fileUrl}]]'
+    let deleteFileName = '[[${member.memberFile}]]'
 
      let selectedFile = null;
      // 이미지 파일 선택 시 미리보기 표시
@@ -419,7 +419,7 @@
                         if (selectedFile) {
                             uploadImage(selectedFile).then(() => {
                                 if (fileUrl != '') {
-                                    deleteImage(fileUrl).then(() => {
+                                    deleteImage(deleteFileName).then(() => {
                                         window.location.href = '/updateProc2/' + response.email;
                                     });
                                 }else{
