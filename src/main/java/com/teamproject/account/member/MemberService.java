@@ -101,7 +101,7 @@ public class MemberService {
     private static Map<String, String> checkConstraint(Member member,Map<String,String> errors,String joinCode) throws ValidationException{
         //errors.containsKey("password")는
         // 주어진 키(예: "password")가 errors 맵에 존재하는지 여부를 확인하는 함수임
-        if(!errors.containsKey("username")){
+        if(!errors.containsKey("username") && !joinCode.equals("update")){
             //회원아이디의 영소문자,숫자,문자열의 공백을 확인한다.
             if(!member.getUsername().matches("[a-z0-9]{4,20}")){
                 errors.put("username", "4~20자의 영문 소문자, 숫자만 사용 가능합니다.");
