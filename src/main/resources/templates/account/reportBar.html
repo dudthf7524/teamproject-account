@@ -212,9 +212,10 @@
         <a href="/login">로그인</a>
     </div>
     <div class="auth-links" sec:authorize="isAuthenticated()">
-        <a href="#" onclick="document.getElementById('logout').submit();">로그아웃</a><br>
+        <span sec:authentication="principal.memberName"></span>
+        <a href="#" onclick="document.getElementById('logout').submit();">로그아웃</a>
+        <a href="#" onclick="window.location.href='/member/mypage'">마이페이지</a>
     </div>
-</div>
 <div class="container">
     <div class="sidebar">
         <ul>
