@@ -78,7 +78,7 @@ public class MemberService {
         if(joinCode.equals("ok")){
             member.setPassword(passwordEncoder.encode(member.getPassword())); //비밀번호 암호화
             member.setLoginFailCount(0);
-            bannedEmailRepository.delete(bannedEmail.get());
+            //bannedEmailRepository.delete(bannedEmail.get());
             memberRepository.save(member); //DB저장
         }else if(joinCode.equals("update")){
             member.setLoginFailCount(0);
