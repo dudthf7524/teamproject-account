@@ -3,14 +3,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -21,7 +20,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailTokenRepository emailTokenRepository;
-
+    private final BannedEmailRepository bannedEmailRepository;
+    private LocalDateTime bannedDate;
     @Autowired
     private JavaMailSender mailSender;
 
@@ -41,13 +41,20 @@ public class MemberService {
         Optional<Member> idCheck = memberRepository.findByUsername(member.getUsername());
         Optional<Member> emailCheck = memberRepository.findByEmail(member.getEmail());
         Optional<EmailToken> emailTokenCheck = emailTokenRepository.findByEmail(member.getEmail());
-
+        Optional<BannedEmail> bannedEmail = bannedEmailRepository.findByBannedEmail(member.getEmail());
         Map<String, String> errors = new HashMap<>();
         if(idCheck.isPresent() && !joinCode.equals("update")){ //DB의 ID중복체크
             errors.put("username", "등록된 아이디입니다.");
         }
         if(emailCheck.isPresent() && !joinCode.equals("update")){
             errors.put("email", "등록된 이메일입니다.");
+        }
+        //회원탈퇴한 이메일 확인
+        if(bannedEmail.isPresent()){
+            LocalDateTime now = LocalDateTime.now();
+            if(bannedEmail.get().getBannedDate().isAfter(now)){
+                errors.put("email", "등록된 이메일입니다.");
+            }
         }
             //이메일 토큰확인
         if (emailTokenCheck.isPresent()) {
@@ -71,6 +78,7 @@ public class MemberService {
         if(joinCode.equals("ok")){
             member.setPassword(passwordEncoder.encode(member.getPassword())); //비밀번호 암호화
             member.setLoginFailCount(0);
+            bannedEmailRepository.delete(bannedEmail.get());
             memberRepository.save(member); //DB저장
         }else if(joinCode.equals("update")){
             member.setLoginFailCount(0);
@@ -136,7 +144,15 @@ public class MemberService {
     //회원가입시 중복이메일토큰 체크
     public Optional<Member> emailCheck(String email) throws Exception{
         Optional<Member> result = memberRepository.findByEmail(email);
+        Optional<BannedEmail> bannedEmail = bannedEmailRepository.findByBannedEmail(email);
         Map<String, String> errors = new HashMap<>();
+        if(bannedEmail.isPresent()){
+            LocalDateTime now = LocalDateTime.now();
+            if(bannedEmail.get().getBannedDate().isAfter(now)){
+                errors.put("email", "등록된 이메일입니다.");
+                throw new ValidationException(errors);
+            }
+        }
         if(result.isPresent()){
             errors.put("email", "등록된 이메일입니다.");
             throw new ValidationException(errors);
@@ -175,7 +191,6 @@ public class MemberService {
         emailMessage.setSubject(subject);
         emailMessage.setText(message);
         emailMessage.setFrom(fromAddress);
-        System.out.println("이메일정보: "+emailMessage);
         // 이메일 전송
         mailSender.send(emailMessage);
     }
@@ -276,7 +291,19 @@ public class MemberService {
             if (!passwordEncoder.matches(member2.getPassword(),member.get().getPassword() )) {
                 throw new Exception("현재 비밀번호가 다릅니다.");
             }
-            memberRepository.delete(member.get());
+            try {
+                BannedEmail bannedEmail = new BannedEmail();
+                bannedEmail.setBannedEmail(member.get().getEmail());
+                //현재날짜
+                LocalDateTime now = LocalDateTime.now();
+                // 30일 더하기
+                LocalDateTime bannedUntil = now.plusDays(30);
+                bannedEmail.setBannedDate(bannedUntil);
+                bannedEmailRepository.save(bannedEmail);
+                memberRepository.delete(member.get());
+            }catch (Exception e){
+                throw new Exception("에러!");
+            }
             return "회원탈퇴가 정상적으로 완료되었습니다. 그동안 이용해주셔서 감사합니다.";
         }else{
             throw new Exception("에러!");

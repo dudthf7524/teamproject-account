@@ -215,7 +215,6 @@ public class MemberController {
         MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
         Map<String, Object> result = memberTypeCheck.check(auth);
         String username = (String) result.get("username");
-        System.out.println(member);
         try{
             String successMessage = memberService.memberDelete(username,member);
             return ResponseEntity.ok(successMessage);
