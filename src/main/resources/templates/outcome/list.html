@@ -47,9 +47,6 @@
             </div>
             <div class="nav-buttons">
                 <form name="searchForm">
-                    <button type="button" onclick="regDtSearch()">
-                        <i class="fas fa-search"></i>
-                    </button>
                     <input type="hidden" name="regDt">
                 </form>
             </div>
@@ -113,6 +110,16 @@
       currentYear--;
     }
     updateMonthYearDisplay();
+
+    const formattedMonth = currentMonth.toString().padStart(2, '0');
+    const formattedDate = `${currentYear}-${formattedMonth}`;
+    const type = /*[[${type}]]*/ '[[${type}]]'; // 서버에서 전달된 type을 가져옴
+
+    if (type === 'income') {
+        location.href = `/income/list?regDt=${formattedDate}`;
+    } else if (type === 'outcome') {
+        location.href = `/outcome/list?regDt=${formattedDate}`;
+    }
   }
 
   function outcomeUpdate() {

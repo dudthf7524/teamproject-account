@@ -7,4 +7,6 @@ import java.util.List;
 public interface IncomeRepository extends JpaRepository<IncomeEntity, Long> {
 
     List<IncomeEntity> findAllByMemberNoAndRegDtContainsOrderByRegDtAsc(long memberNo, String regDt);
+
+    List<IncomeEntity> findAllByRegDt(String regDt);
 }
