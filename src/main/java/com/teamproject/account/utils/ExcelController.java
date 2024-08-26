@@ -1,7 +1,7 @@
 package com.teamproject.account.utils;
 
 
-import com.teamproject.account.member.MemberTypeCheck;
+import com.teamproject.account.member.Login.MemberTypeCheck;
 import com.teamproject.account.outcome.OutcomeDTO;
 import com.teamproject.account.outcome.OutcomeService;
 import jakarta.servlet.http.HttpServletResponse;
