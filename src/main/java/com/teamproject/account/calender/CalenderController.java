@@ -1,9 +1,11 @@
 package com.teamproject.account.calender;
 
 import com.teamproject.account.income.IncomeDTO;
+import com.teamproject.account.member.MemberTypeCheck;
 import com.teamproject.account.outcome.OutcomeDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,11 +29,15 @@ public class CalenderController {
     }
 
     @GetMapping("/api/financial-info")
-    public ResponseEntity<Map<String, Object>> getFinancialInfo(@RequestParam("date") String date) {
+    public ResponseEntity<Map<String, Object>> getFinancialInfo(@RequestParam("date") String date, Authentication auth) {
         // 예시 데이터 (실제 데이터베이스에서 데이터를 가져오는 로직이 필요)
 
-        List<IncomeDTO> incomeDTOList = calenderService.findByIncome(date);
-        List<OutcomeDTO> outcomeDTOList = calenderService.findByoutcome(date);
+        MemberTypeCheck memberTypeCheck = new MemberTypeCheck();
+        Map<String, Object> result = memberTypeCheck.check(auth);
+        Long memberNo = (Long) result.get("memberNo");
+
+        List<IncomeDTO> incomeDTOList = calenderService.findByIncome(memberNo, date);
+        List<OutcomeDTO> outcomeDTOList = calenderService.findByoutcome(memberNo, date);
 
         int incometotal = 0;
         int outcometotal = 0;
