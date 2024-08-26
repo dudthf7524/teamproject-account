@@ -33,14 +33,12 @@ public class IncomeReportController {
                                          @RequestParam("option") String option,
                                          @RequestParam("value") String value,
                                          @ModelAttribute IncomeDTO incomeDTO) {
-        System.out.println(option);
 
         if (incomeDTO.getRegDt() == null) {
             LocalDate today = LocalDate.now();
             String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM"));
             incomeDTO.setRegDt(formattedDate);
         }
-        System.out.println("incomeDTO.getRegDt() : "+incomeDTO.getRegDt());
         List<IncomeReportDTO> incomeReportDTOList = incomeReportService.getIncomeSummary(memberNoMethod(auth), incomeDTO.getRegDt());
 
         Long[] price = new Long[incomeReportDTOList.size()];

@@ -319,16 +319,13 @@ public class MemberService {
     public String memberDelete(String username,Member member2)throws Exception{
         Optional<Member> member = memberRepository.findByUsername(username);
         BCryptPasswordEncoder passwordEncoder1 = new BCryptPasswordEncoder();
-
-            if(member.isPresent()) {
-                if(member.get().getProvider() == null) {
-                    if (member2.getPassword() == null || member2.getPassword().trim().isEmpty()) {
-                        throw new Exception("현재 비밀번호를 입력해주세요");
-                    }
-                    if (!passwordEncoder.matches(member2.getPassword(), member.get().getPassword())) {
-                        throw new Exception("현재 비밀번호가 다릅니다.");
-                    }
-                }
+        if(member.isPresent()){
+            if (member2.getPassword() == null || member2.getPassword().trim().isEmpty()) {
+                throw new Exception("현재 비밀번호를 입력해주세요");
+            }
+            if (!passwordEncoder.matches(member2.getPassword(),member.get().getPassword() )) {
+                throw new Exception("현재 비밀번호가 다릅니다.");
+            }
             try {
                 BannedEmail bannedEmail = new BannedEmail();
                 bannedEmail.setBannedEmail(member.get().getEmail());

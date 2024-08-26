@@ -39,11 +39,24 @@ public class MemberController {
             @RequestParam("joinCode") String joinCode
             ) {
         try {
-            String successMessage = memberService.join(member,joinCode);
-            return ResponseEntity.ok(Map.of("message", successMessage,"email",member.getEmail()));
+            // 로그 추가
+            System.out.println("Received Member: " + member.toString());
+            System.out.println("Received joinCode: " + joinCode);
+
+            String successMessage = memberService.join(member, joinCode);
+
+            // 로그 추가
+            System.out.println("Member successfully joined. Message: " + successMessage);
+
+            return ResponseEntity.ok(Map.of("message", successMessage, "email", member.getEmail()));
         } catch (ValidationException e) {
+            // 로그 추가
+            System.err.println("Validation failed: " + e.getErrors());
             return ResponseEntity.badRequest().body(e.getErrors());
         } catch (Exception e) {
+            // 로그 추가
+            System.err.println("An unexpected error occurred: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         }
     }
