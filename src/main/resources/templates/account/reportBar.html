@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/menu/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <style>
     .custom-radio {
         display: flex;
@@ -21,11 +22,27 @@
         border:1px;
 
     }
-     #barChart {
-            width: 80%;  /* 부모 요소의 80% 너비 */
-            max-width: 500px;  /* 최대 너비를 600px로 설정 */
-            max-height: 500px;   /* 높이 400px로 설정 */
-        }
+    #barChart {
+        width: 80%;  /* 부모 요소의 80% 너비 */
+        max-width: 700px;  /* 최대 너비를 600px로 설정 */
+        max-height: 500px;   /* 높이 400px로 설정 */
+    }
+    #download_excel {
+        border: none; /* 테두리 제거 */
+        color: black; /* 흰색 글씨 */
+        padding: 10px 20px; /* 여백 */
+        text-align: center; /* 텍스트 중앙 정렬 */
+        text-decoration: none; /* 텍스트 밑줄 제거 */
+        font-size: 16px; /* 폰트 크기 */
+        cursor: pointer; /* 마우스 커서 모양 변경 */
+        border-radius: 12px; /* 둥근 모서리 */
+    }
+
+    #download_excel:hover {
+        background-color: white; /* 호버 시 배경색 변경 */
+        color: black; /* 호버 시 글자색 변경 */
+        border: 2px solid #4CAF50; /* 호버 시 테두리 추가 */
+    }
 
   </style>
 </head>
@@ -67,10 +84,14 @@
         </div>
         <div class="calendar">
             <canvas id="barChart"></canvas>
-
+            <button id="download_excel">엑셀 다운로드(지출)</button>
         </div>
     </div>
 </div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 <script>
      function navigateToPage(radio) {
             if (radio.checked) {
@@ -85,7 +106,6 @@
                 }
             }
         }
-
 </script>
 
 <script th:inline="javascript">
@@ -113,10 +133,18 @@
         'rgba(54, 162, 235, 0.2)',
         'rgba(255, 206, 86, 0.2)',
         'rgba(75, 192, 192, 0.2)',
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
         // 필요한 만큼 색상을 추가하세요.
     ];
 
     const borderColors = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
         'rgba(255, 99, 132, 1)',
         'rgba(54, 162, 235, 1)',
         'rgba(255, 206, 86, 1)',
@@ -134,6 +162,7 @@
 });
 
 const ctx = document.getElementById('barChart').getContext('2d');
+const total = data.reduce((sum, value) => sum + value, 0);
 const barChart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -155,9 +184,21 @@ const barChart = new Chart(ctx, {
                     boxWidth: 20,  // 범례 아이콘의 크기
                     padding: 15  // 범례 라벨의 패딩
                 }
+            },
+            datalabels: {
+                anchor: 'center',
+                align: 'center',
+                formatter: function(value) {
+                    return `${((value / total) * 100).toFixed(2)}%`;  // 퍼센트 값을 계산하여 표시
+                },
+                color: '#555',  // 퍼센트 텍스트 색상
+                font: {
+                    weight: 'bold'
+                }
             }
         }
-    }
+    },
+    plugins: [ChartDataLabels]  // 플러그인 활성화
 });
 
 </script>
@@ -166,35 +207,36 @@ const barChart = new Chart(ctx, {
     let today = new Date();
     let currentYear = today.getFullYear();
     let currentMonth = today.getMonth() + 1;
+    let regDt = `${currentYear}-${String(currentMonth).padStart(2, '0')}`; // 초기 regDt 설정
 
     // 현재 년월을 표시하는 함수
     function updateMonthYearDisplay() {
-        const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
-        document.getElementById('currentMonthYear').innerText = `${currentYear}년 ${monthNames[currentMonth - 1]}`;
+    const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
+    document.getElementById('currentMonthYear').innerText = `${currentYear}년 ${monthNames[currentMonth - 1]}`;
     }
 
     // 월을 변경하는 함수
     function changeMonth(delta) {
-        currentMonth += delta;
-        if (currentMonth > 12) {
-            currentMonth = 1;
-            currentYear++;
-        } else if (currentMonth < 1) {
-            currentMonth = 12;
-            currentYear--;
-        }
-        updateMonthYearDisplay();
+    currentMonth += delta;
+    if (currentMonth > 12) {
+        currentMonth = 1;
+        currentYear++;
+    } else if (currentMonth < 1) {
+        currentMonth = 12;
+        currentYear--;
+    }
+    updateMonthYearDisplay();
 
-        const formattedMonth = currentMonth.toString().padStart(2, '0');
-        const regDt = `${currentYear}-${formattedMonth}`;
-        const value = document.getElementById('value').value;
-        // URL에 변경된 regDt 값을 반영하여 페이지 이동
-        if(value == "1"){
-             location.href = `/income/report?option=bar&value=${value}&regDt=${regDt}`;
-        } else if(value == "2"){
-            location.href = `/outcome/report?option=bar&value=${value}&regDt=${regDt}`;
-        }
+    const formattedMonth = currentMonth.toString().padStart(2, '0');
+    regDt = `${currentYear}-${formattedMonth}`; // regDt 값을 업데이트
 
+    const value = document.getElementById('value').value;
+    // URL에 변경된 regDt 값을 반영하여 페이지 이동
+    if (value == "1") {
+        location.href = `/income/report?option=bar&value=${value}&regDt=${regDt}`;
+    } else if (value == "2") {
+        location.href = `/outcome/report?option=bar&value=${value}&regDt=${regDt}`;
+    }
     }
 
     // 페이지 로드 시 호출되는 함수
@@ -204,9 +246,25 @@ const barChart = new Chart(ctx, {
             const [year, month] = searchedDate.split('-');
             currentYear = parseInt(year, 10);
             currentMonth = parseInt(month, 10);
+            regDt = `${currentYear}-${String(currentMonth).padStart(2, '0')}`; // 로드 시 regDt 값 업데이트
         }
         updateMonthYearDisplay();
+
+        const value = document.getElementById('value').value;
+        const downloadButton = document.getElementById('download_excel');
+        if (value === "2") {
+            downloadButton.style.display = "inline-block";
+        } else {
+            downloadButton.style.display = "none";
+        }
     });
+
+    $(document).ready(function () {
+    $('#download_excel').on('click', function () {
+        location.href = `/excel/download?regDt=${regDt}`;  // regDt 값을 URL에 반영
+    });
+    });
+
 </script>
 </body>
 </html>

@@ -70,7 +70,7 @@
             <tr th:each="income: ${incomeDTOList}">
                 <td><input type="checkbox" name="incomeId" th:value="${income.incomeId}" ></td>
                 <td th:text="${income.regDt}"></td>
-                <td th:text="${income.incomeCategoryName}"></td>
+                <td th:text="${income.incomeContent}"></td>
                 <td th:text="${income.price}"></td>
                 <td th:text="${income.memo}"></td>
             </tr>

@@ -21,7 +21,8 @@
                 <tr>
                     <th>수정/삭제 체크</th>
                     <th>날짜</th>
-                    <th>지출내역</th>
+                    <th>분류</th>
+                    <th>사용내역</th>
                     <th>금액</th>
                     <th>메모</th>
                 </tr>
@@ -31,6 +32,7 @@
                     <td><input type="checkbox" name="outcomeId" th:value="${outcome.outcomeId}" ></td>
                     <td th:text="${outcome.regDt}"></td>
                     <td th:text="${outcome.outcomeCategoryName}"></td>
+                    <td th:text="${outcome.outcomeContent}"></td>
                     <td th:text="${outcome.price}"></td>
                     <td th:text="${outcome.memo}"></td>
                 </tr>
@@ -40,11 +42,17 @@
                     <td><input type="date" name="regDt"></td>
                     <td>
                         <select name="outcomeCategoryId">
-                            <option value="11">생활비</option>
-                            <option value="22">교통비</option>
-                            <option value="33">월세</option>
+                            <option value="11">주거/통신</option>
+                            <option value="22">식비</option>
+                            <option value="33">의복/미용</option>
+                            <option value="44">교통</option>
+                            <option value="55">건강/문화</option>
+                            <option value="66">교육</option>
+                            <option value="77">저축</option>
+                            <option value="88">보험</option>
                         </select>
                     </td>
+                    <td><input type="text" name="outcomeContent"></td>
                     <td><input type="text" name="price"></td>
                     <td><input type="text" name="memo"></td>
                 </tr>
@@ -59,7 +67,6 @@
 
 <script>
     function save(){
-        alert('저장');
         document.outcomeForm.action = "/outcome/write";
         document.outcomeForm.method = "post";
         document.outcomeForm.submit();

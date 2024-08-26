@@ -25,6 +25,8 @@
         padding: 10px 20px;
 
     }
+
+
   </style>
 </head>
 <body>
@@ -66,7 +68,7 @@
             <tr th:each="outcome: ${outcomeDTOList}">
                 <td><input type="checkbox" name="outcomeId" th:value="${outcome.outcomeId}" ></td>
                 <td th:text="${outcome.regDt}"></td>
-                <td th:text="${outcome.outcomeCategoryName}"></td>
+                <td th:text="${outcome.outcomeContent}"></td>
                 <td th:text="${outcome.price}"></td>
                 <td th:text="${outcome.memo}"></td>
             </tr>

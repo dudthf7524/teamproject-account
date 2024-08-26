@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 public class IncomeDTO {
     private Long incomeId;
     private String incomeCategoryName;
+    private String incomeContent;
     private Long price;
     private String memo;
     private String regDt;
@@ -23,6 +24,7 @@ public class IncomeDTO {
         IncomeDTO incomeDTO = new IncomeDTO();
         incomeDTO.setIncomeId(incomeEntity.getIncomeId());
         incomeDTO.setIncomeCategoryName(incomeEntity.getIncomeCategory().getIncomeCategoryName());
+        incomeDTO.setIncomeContent(incomeEntity.getIncomeContent());
         incomeDTO.setPrice(incomeEntity.getPrice());
         incomeDTO.setMemo(incomeEntity.getMemo());
         incomeDTO.setRegDt(incomeEntity.getRegDt());

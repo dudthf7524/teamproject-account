@@ -47,6 +47,7 @@ public class IncomeReportController {
         for(int i = 0; i<incomeReportDTOList.size(); i++) {
             categoryName[i] = incomeReportDTOList.get(i).getIncomeCategoryName();
             price[i] = incomeReportDTOList.get(i).getTotalIncome();
+
         }
         String chart = "";
         if(option.equals("bar")){
