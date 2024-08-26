@@ -20,7 +20,8 @@
                 <thead>
                 <tr>
                     <th>날짜</th>
-                    <th>수입내역</th>
+                    <th>분류</th>
+                    <th>사용내역</th>
                     <th>금액</th>
                     <th>메모</th>
                 </tr>
@@ -32,11 +33,17 @@
                         <td><input type="date" th:value="${outcome.regDt}" name="regDt"></td>
                         <td>
                             <select name="outcomeCategoryId">
-                                <option value="11" th:selected="${outcome.outcomeCategoryName == '생활비'}">생활비</option>
-                                <option value="22" th:selected="${outcome.outcomeCategoryName == '교통비'}">교통비</option>
-                                <option value="33" th:selected="${outcome.outcomeCategoryName == '월세'}">월세</option>
+                                <option value="11" th:selected="${outcome.outcomeCategoryName == '주거/통신'}">주거/통신</option>
+                                <option value="22" th:selected="${outcome.outcomeCategoryName == '식비'}">식비</option>
+                                <option value="33" th:selected="${outcome.outcomeCategoryName == '의복/미용'}">의복/미용</option>
+                                <option value="44" th:selected="${outcome.outcomeCategoryName == '교통'}">교통</option>
+                                <option value="55" th:selected="${outcome.outcomeCategoryName == '건강/문화'}">건강/문화</option>
+                                <option value="66" th:selected="${outcome.outcomeCategoryName == '교육'}">교육</option>
+                                <option value="77" th:selected="${outcome.outcomeCategoryName == '저축'}">저축</option>
+                                <option value="88" th:selected="${outcome.outcomeCategoryName == '보험'}">보험</option>
                             </select>
                         </td>
+                        <td><input type="text" th:value="${outcome.outcomeContent}" name="outcomeContent"></td>
                         <td><input type="text" th:value="${outcome.price}" name="price"></td>
                         <td><input type="text" th:value="${outcome.memo}" name="memo"></td>
                     </div>

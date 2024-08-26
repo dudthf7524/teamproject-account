@@ -20,6 +20,7 @@
                 <thead>
                 <tr>
                     <th>날짜</th>
+                    <th>분류</th>
                     <th>수입내역</th>
                     <th>금액</th>
                     <th>메모</th>
@@ -32,10 +33,11 @@
                         <td><input type="date" th:value="${income.regDt}" name="regDt"></td>
                         <td>
                             <select name="incomeCategoryId" th:value="${income.incomeCategoryName}" >
-                                <option value="11" th:selected="${income.incomeCategoryName == '용돈'}">용돈</option>
-                                <option value="22" th:selected="${income.incomeCategoryName == '월급'}">월급</option>
+                                <option value="11" th:selected="${income.incomeCategoryName == '주수입'}">주수입</option>
+                                <option value="22" th:selected="${income.incomeCategoryName == '부수입'}">부수입</option>
                             </select>
                         </td>
+                        <td><input type="text" th:value="${income.incomeContent}" name="incomeContent"></td>
                         <td><input type="text" th:value="${income.price}" name="price"></td>
                         <td><input type="text" th:value="${income.memo}" name="memo"></td>
                     </div>
@@ -43,6 +45,7 @@
                     <div th:unless="${income.incomeId == incomeId}">
                         <td th:text="${income.regDt}"></td>
                         <td th:text="${income.incomeCategoryName}"></td>
+                        <td th:text="${income.incomeContent}"></td>
                         <td th:text="${income.price}"></td>
                         <td th:text="${income.memo}"></td>
                     </div>

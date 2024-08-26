@@ -19,6 +19,9 @@ public class IncomeEntity {
     @Column(nullable = false)
     private Long incomeCategoryId;
 
+    @Column(nullable = false)
+    private String incomeContent;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "incomeCategoryId", referencedColumnName = "incomeCategoryId", insertable = false, updatable = false)
     private IncomeCategoryEntity incomeCategory;
@@ -26,7 +29,7 @@ public class IncomeEntity {
     @Column(nullable = false)
     private Long price;
 
-    @Column(nullable = false)
+    @Column
     private String memo;
 
     @Column(nullable = false)
@@ -39,6 +42,7 @@ public class IncomeEntity {
         IncomeEntity incomeEntity = new IncomeEntity();
         incomeEntity.setIncomeId(incomeDTO.getIncomeId());
         incomeEntity.setIncomeCategoryId(incomeDTO.getIncomeCategoryId());
+        incomeEntity.setIncomeContent(incomeDTO.getIncomeContent());
         incomeEntity.setPrice(incomeDTO.getPrice());
         incomeEntity.setMemo(incomeDTO.getMemo());
         incomeEntity.setRegDt(incomeDTO.getRegDt());

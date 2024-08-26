@@ -15,7 +15,8 @@ public interface OutcomeReportRepository extends JpaRepository<OutcomeEntity, Lo
             "JOIN i.outcomeCategory c " +
             "WHERE i.memberNo = :memberNo " +
             "AND i.regDt LIKE :regDt% " +  // regDt를 LIKE 연산자로 필터링
-            "GROUP BY c.outcomeCategoryName, i.memberNo")
+            "GROUP BY c.outcomeCategoryName, i.memberNo " +
+            "ORDER BY SUM(i.price) DESC")
     List<OutcomeReportDTO> findOutcomeSummaryByMemberNoAndRegDt(@Param("memberNo") Long memberNo, @Param("regDt") String regDt);
 
 

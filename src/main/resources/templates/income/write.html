@@ -21,6 +21,7 @@
                 <tr>
                     <th>수정/삭제 체크</th>
                     <th>날짜</th>
+                    <th>분류</th>
                     <th>수입내역</th>
                     <th>금액</th>
                     <th>메모</th>
@@ -31,6 +32,7 @@
                     <td><input type="checkbox" name="incomeId" th:value="${income.incomeId}" ></td>
                     <td th:text="${income.regDt}"></td>
                     <td th:text="${income.incomeCategoryName}"></td>
+                    <td th:text="${income.incomeContent}"></td>
                     <td th:text="${income.price}"></td>
                     <td th:text="${income.memo}"></td>
                 </tr>
@@ -40,10 +42,11 @@
                     <td><input type="date" name="regDt"></td>
                     <td>
                         <select name="incomeCategoryId">
-                            <option value="11">용돈</option>
-                            <option value="22">월급</option>
+                            <option value="11">주수입</option>
+                            <option value="22">부수입</option>
                         </select>
                     </td>
+                    <td><input type="text" name="incomeContent"></td>
                     <td><input type="text" name="price"></td>
                     <td><input type="text" name="memo"></td>
                 </tr>

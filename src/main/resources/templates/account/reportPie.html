@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="/menu/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
     <style>
     .custom-radio {
         display: flex;
@@ -158,9 +160,24 @@
                             return value.toLocaleString() + ' 원';
                         }
                     }
+                },
+            datalabels: {
+                formatter: (value, context) => {
+                    let sum = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                    let percentage = (value * 100 / sum).toFixed(2) + '%';
+                    return percentage;
+                },
+                color: '#555',
+                anchor: 'center',
+                align: 'center',
+                font: {
+                    weight: 'bold',
+                    size: 16,
                 }
             }
         }
+    },
+    plugins: [ChartDataLabels]
     });
 </script>
 

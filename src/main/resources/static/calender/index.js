@@ -80,7 +80,7 @@ const openModal = (year, month, day) => {
                          <tbody>
                              ${data.incomeDTOList.map(income => `
                                  <tr>
-                                     <td>${income.incomeCategoryName}</td>
+                                     <td>${income.incomeContent}</td>
                                      <td>${income.price}</td>
                                      <td>${income.memo}</td>
                                  </tr>
@@ -91,7 +91,7 @@ const openModal = (year, month, day) => {
                  <table>
                       <thead>
                           <tr>
-                              <th>수입내역</th>
+                              <th>지출내역</th>
                               <th>금액</th>
                               <th>메모</th>
                           </tr>
@@ -99,7 +99,7 @@ const openModal = (year, month, day) => {
                       <tbody>
                           ${data.outcomeDTOList.map(outcome => `
                               <tr>
-                                  <td>${outcome.outcomeCategoryName}</td>
+                                  <td>${outcome.outcomeContent}</td>
                                   <td>${outcome.price}</td>
                                   <td>${outcome.memo}</td>
                               </tr>

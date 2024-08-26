@@ -21,6 +21,9 @@ public class OutcomeEntity {
     @Column(nullable = false)
     private Long outcomeCategoryId;
 
+    @Column(nullable = false)
+    private String outcomeContent;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "outcomeCategoryId", referencedColumnName = "outcomeCategoryId", insertable = false, updatable = false)
     private OutcomeCategoryEntity outcomeCategory;
@@ -28,7 +31,7 @@ public class OutcomeEntity {
     @Column(nullable = false)
     private Long price;
 
-    @Column(nullable = false)
+    @Column
     private String memo;
 
     @Column(nullable = false)
@@ -41,6 +44,7 @@ public class OutcomeEntity {
         OutcomeEntity outcomeEntity = new OutcomeEntity();
         outcomeEntity.setOutcomeId(outcomeDTO.getOutcomeId());
         outcomeEntity.setOutcomeCategoryId(outcomeDTO.getOutcomeCategoryId());
+        outcomeEntity.setOutcomeContent(outcomeDTO.getOutcomeContent());
         outcomeEntity.setPrice(outcomeDTO.getPrice());
         outcomeEntity.setMemo(outcomeDTO.getMemo());
         outcomeEntity.setRegDt(outcomeDTO.getRegDt());
