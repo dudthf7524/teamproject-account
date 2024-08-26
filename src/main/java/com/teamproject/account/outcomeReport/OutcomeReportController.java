@@ -1,7 +1,6 @@
 package com.teamproject.account.outcomeReport;
 
-import com.teamproject.account.income.IncomeDTO;
-import com.teamproject.account.member.MemberTypeCheck;
+import com.teamproject.account.member.Login.MemberTypeCheck;
 import com.teamproject.account.outcome.OutcomeDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

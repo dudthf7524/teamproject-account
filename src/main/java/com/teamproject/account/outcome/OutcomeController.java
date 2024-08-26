@@ -1,8 +1,6 @@
 package com.teamproject.account.outcome;
 
-import com.teamproject.account.income.IncomeDTO;
-import com.teamproject.account.member.MemberTypeCheck;
-import com.teamproject.account.member.MyUserDetailsService;
+import com.teamproject.account.member.Login.MemberTypeCheck;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;

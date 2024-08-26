@@ -1,12 +1,11 @@
-package com.teamproject.account.member;
+package com.teamproject.account.member.Login;
 
-import org.springframework.security.core.GrantedAuthority;
+import com.teamproject.account.member.Member;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 
 public class CustomUserDetails extends User implements OAuth2User {

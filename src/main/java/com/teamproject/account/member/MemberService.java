@@ -1,4 +1,8 @@
 package com.teamproject.account.member;
+import com.teamproject.account.member.Email.BannedEmail;
+import com.teamproject.account.member.Email.BannedEmailRepository;
+import com.teamproject.account.member.Email.EmailToken;
+import com.teamproject.account.member.Email.EmailTokenRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,9 +59,11 @@ public class MemberService {
             LocalDateTime now = LocalDateTime.now();
             if(bannedEmail.get().getBannedDate().isAfter(now)){
                 errors.put("email", "등록된 이메일입니다.");
+            }else{
+                bannedEmailRepository.delete(bannedEmail.get());
             }
         }
-            //이메일 토큰확인
+        //이메일 토큰확인
         if (emailTokenCheck.isPresent()) {
             if (!emailTokenCheck.get().getToken().equals(member.getEmailTokenInput())) {
                 errors.put("emailTokenInput", "이메일 인증번호가 틀렸습니다.");
@@ -78,8 +85,7 @@ public class MemberService {
         if(joinCode.equals("ok")){
             member.setPassword(passwordEncoder.encode(member.getPassword())); //비밀번호 암호화
             member.setLoginFailCount(0);
-            //bannedEmailRepository.delete(bannedEmail.get());
-            memberRepository.save(member); //DB저장
+            memberRepository.save(member);//DB저장
         }else if(joinCode.equals("update")){
             member.setLoginFailCount(0);
             memberRepository.save(member);
@@ -146,6 +152,12 @@ public class MemberService {
         Optional<Member> result = memberRepository.findByEmail(email);
         Optional<BannedEmail> bannedEmail = bannedEmailRepository.findByBannedEmail(email);
         Map<String, String> errors = new HashMap<>();
+
+        if(email == null || email.trim().isEmpty()){
+            errors.put("email", "이메일을 입력해주세요.");
+            throw new ValidationException(errors);
+        }
+
         if(bannedEmail.isPresent()){
             LocalDateTime now = LocalDateTime.now();
             if(bannedEmail.get().getBannedDate().isAfter(now)){
@@ -157,12 +169,35 @@ public class MemberService {
             errors.put("email", "등록된 이메일입니다.");
             throw new ValidationException(errors);
         }
+        //이메일 인증 토큰 생성 및 발송
+        String token = generateAlphaNumericToken().toString();
+        //토큰객체 생성
+        EmailToken emailToken = new EmailToken(token, email);
+
         //중복되는 이메일에 해당하는 토큰삭제
         Optional<EmailToken> emailTokenCheck = emailTokenRepository.findByEmail(email);
         if(emailTokenCheck.isPresent()){
             emailTokenRepository.delete(emailTokenCheck.get());
+            emailTokenRepository.save(emailToken);
+            sendVerificationEmail(email, token);
+        }else{
+            emailTokenRepository.save(emailToken);
+            sendVerificationEmail(email, token);
         }
         return result;
+    }
+
+    //이메일 토큰6자리 랜덤생성메소드
+    public String generateAlphaNumericToken() {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        SecureRandom random = new SecureRandom();
+        StringBuilder token = new StringBuilder(6);
+
+        for (int i = 0; i < 6; i++) {
+            int index = random.nextInt(characters.length());
+            token.append(characters.charAt(index));
+        }
+        return token.toString();
     }
 
     //로그인시 중복이메일토큰 체크

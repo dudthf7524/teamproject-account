@@ -1,13 +1,13 @@
-package com.teamproject.account.member;
+package com.teamproject.account.member.Login;
+import com.teamproject.account.member.Member;
+import com.teamproject.account.member.MemberRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -38,7 +38,7 @@ public class MyUserDetailsService implements UserDetailsService,OAuth2UserServic
         //권한을 집어넣을떄는 List타입이 GrantedAuthority 가 들어가야한다~~!
         List<GrantedAuthority> authority = new ArrayList<>();
         //권한을 추가할때는 new SimpleGrantedAuthority() 함수를 사용해야한다..
-        authority.add(new SimpleGrantedAuthority("일반유저"));
+        authority.add(new SimpleGrantedAuthority("일반유저"));  
         return new CustomUserDetails(member1, null);
     }
 

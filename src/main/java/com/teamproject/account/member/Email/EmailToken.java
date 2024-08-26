@@ -1,4 +1,4 @@
-package com.teamproject.account.member;
+package com.teamproject.account.member.Email;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,7 +29,6 @@ public class EmailToken {
     public EmailToken() {
 
     }
-
     // 필드를 초기화하는 생성자
     public EmailToken(String token, String email) {
         this.token = token;
