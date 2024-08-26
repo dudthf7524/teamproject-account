@@ -1,4 +1,4 @@
-package com.teamproject.account.member;
+package com.teamproject.account.member.Email;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

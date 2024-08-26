@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>회원가입</title>
@@ -11,10 +11,12 @@
 
         }
         .header {
-
-            padding: 20px;
-            background-color: #ecdcff;
-            color: #7551a0;
+        padding: 20px;
+          background-color: #ecdcff;
+          color: #7551a0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
         .header h1 {
             margin: 0;
@@ -96,9 +98,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-<div class="header">
-    <h1>가계부</h1>
-</div>
+<div class="header" th:include=".common/menu :: header"></div>
 <br><br><br>
 <form name="joinForm" id="joinForm">
     <table align="center">
@@ -318,7 +318,6 @@
      $(document).ready(function() {
          $('#emailVerifyButton').on('click', function() {
              var email = $('#email').val().trim();
-
              $.ajax({
                  url: '/member/email-verify',
                  type: 'POST',

@@ -1,14 +1,17 @@
-package com.teamproject.account.member;
+package com.teamproject.account.member.Login;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
 import java.io.IOException;
 
-public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -19,6 +22,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         // 가져온 id 값 활용하기
         System.out.println("Login successful for user: " + username);
         request.getSession().setAttribute("loginSuccessUsername", username);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Authenticated user: " + auth.getName());
+        System.out.println("Authorities: " + auth.getAuthorities());
+        //super.onAuthenticationSuccess(request, response, authentication);
         // 성공 후 리다이렉트 처리
         response.sendRedirect("/loginSuccess");
     }
