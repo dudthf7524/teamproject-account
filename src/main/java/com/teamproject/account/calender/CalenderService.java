@@ -19,8 +19,8 @@ public class CalenderService {
     private final IncomeRepository incomeRepository;
     private final OutcomeRepository outcomeRepository;
 
-    public List<IncomeDTO> findByIncome(String date) {
-        List<IncomeEntity> incomeEntityList = incomeRepository.findAllByRegDt(date);
+    public List<IncomeDTO> findByIncome(long memberNo, String date) {
+        List<IncomeEntity> incomeEntityList = incomeRepository.findAllByMemberNoAndRegDtContainsOrderByRegDtAsc(memberNo, date);
 
         List<IncomeDTO> incomeDTOList = new ArrayList<>();
 
@@ -31,8 +31,8 @@ public class CalenderService {
         return incomeDTOList;
     }
 
-    public List<OutcomeDTO> findByoutcome(String date) {
-        List<OutcomeEntity> outcomeEntityList = outcomeRepository.findAllByRegDt(date);
+    public List<OutcomeDTO> findByoutcome(long memberNo, String date) {
+        List<OutcomeEntity> outcomeEntityList = outcomeRepository.findAllByMemberNoAndRegDtContainsOrderByRegDtAsc(memberNo, date);
 
         List<OutcomeDTO> outcomeDTOList = new ArrayList<>();
 
