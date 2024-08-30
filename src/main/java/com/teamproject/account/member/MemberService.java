@@ -41,7 +41,7 @@ public class MemberService {
             throw new Exception("오류발생");
         }
     }
-//회원가입===============================================================================================================
+    //회원가입===============================================================================================================
     public String join(Member member,String joinCode) throws Exception{
         Optional<Member> idCheck = memberRepository.findByUsername(member.getUsername());
         Optional<Member> emailCheck = memberRepository.findByEmail(member.getEmail());
@@ -92,7 +92,7 @@ public class MemberService {
         }
         return "회원가입이 성공적으로 완료되었습니다.";
     }
-//회원정보 NULL,공백 체크=============================================================================================
+    //회원정보 NULL,공백 체크=============================================================================================
     private static Map<String, String> nullCheck (Member member,Map<String, String> errors,String joinCode) throws Exception {
         if(!errors.containsKey("username")) {
             validateField(member.getUsername(), "username/아이디는 필수입력입니다.", errors);
@@ -111,7 +111,7 @@ public class MemberService {
             errors.put(errorMessage.substring(0,index), errorMessage.substring(index+1));
         }
     }
-//회원정보 제약조건 체크=============================================================================================
+    //회원정보 제약조건 체크=============================================================================================
     private static Map<String, String> checkConstraint(Member member,Map<String,String> errors,String joinCode) throws ValidationException{
         //errors.containsKey("password")는
         // 주어진 키(예: "password")가 errors 맵에 존재하는지 여부를 확인하는 함수임
@@ -139,14 +139,14 @@ public class MemberService {
         }
         return errors;
     }
-//이메일 인증======================================================================================================
+    //이메일 인증======================================================================================================
     //아이디로 이메일찾기
     public String emailSearch(String username){
         Optional<Member> emailSearch = memberRepository.findByUsername(username);
         String email = emailSearch.get().getEmail();
         return email;
     }
-    
+
     //회원가입시 중복이메일토큰 체크
     public Optional<Member> emailCheck(String email) throws Exception{
         Optional<Member> result = memberRepository.findByEmail(email);
@@ -248,7 +248,7 @@ public class MemberService {
         }
     }
 
-//로그인 실패횟수체크==================================================================================================
+    //로그인 실패횟수체크==================================================================================================
     public int loginFailCount(String username){
         Optional<Member> member = memberRepository.findByUsername(username);
         if(member.isPresent()){
@@ -263,7 +263,7 @@ public class MemberService {
             return 6;
         }
     }
-//로그인 성공시 실패횟수 초기화==========================================================================================
+    //로그인 성공시 실패횟수 초기화==========================================================================================
     public void loginSuccessCount(String username){
         Optional<Member> member = memberRepository.findByUsername(username);
         member.get().setLoginFailCount(0);
@@ -278,13 +278,13 @@ public class MemberService {
             return 0;
         }
     }
-//중요 정보 마스킹========================================================================================================
+    //중요 정보 마스킹========================================================================================================
     public String replaceSubstringWithChar(String str,int start,int end,String replaceChar){
         int length = end - start;
         // 시작 인덱스 이전의 문자열 + 교체 문자가 반복된 부분 + 끝 인덱스 이후의 문자열을 합침
         return str.substring(0, start) + replaceChar.repeat(length) + str.substring(end);
     }
-//비밀번호 변경===========================================================================================================
+    //비밀번호 변경===========================================================================================================
     public String newPasswordChange(Member member)throws Exception{
         Optional<Member> member2 = memberRepository.findByUsername(member.getUsername());
         BCryptPasswordEncoder passwordEncoder1 = new BCryptPasswordEncoder();
@@ -315,16 +315,18 @@ public class MemberService {
             throw new Exception("에러! 새로고침을해주세요");
         }
     }
-//회원탈퇴===============================================================================================================
+    //회원탈퇴===============================================================================================================
     public String memberDelete(String username,Member member2)throws Exception{
         Optional<Member> member = memberRepository.findByUsername(username);
         BCryptPasswordEncoder passwordEncoder1 = new BCryptPasswordEncoder();
         if(member.isPresent()){
-            if (member2.getPassword() == null || member2.getPassword().trim().isEmpty()) {
-                throw new Exception("현재 비밀번호를 입력해주세요");
-            }
-            if (!passwordEncoder.matches(member2.getPassword(),member.get().getPassword() )) {
-                throw new Exception("현재 비밀번호가 다릅니다.");
+            if(member.get().getProvider() == null) {
+                if (member2.getPassword() == null || member2.getPassword().trim().isEmpty()) {
+                    throw new Exception("현재 비밀번호를 입력해주세요");
+                }
+                if (!passwordEncoder.matches(member2.getPassword(), member.get().getPassword())) {
+                    throw new Exception("현재 비밀번호가 다릅니다.");
+                }
             }
             try {
                 BannedEmail bannedEmail = new BannedEmail();

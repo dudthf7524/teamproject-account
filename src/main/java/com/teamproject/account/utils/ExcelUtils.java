@@ -22,13 +22,6 @@ import java.util.stream.Collectors;
 @Component
 public class ExcelUtils implements ExcelUtilMethodFactory {
 
-    /*
-     *   학생 엑셀 다운로드 수행 로직
-     *   @param List<StudentDto>
-     *   @param HttpServletResponse
-     *   @throws IOException
-     *   @throws RuntimeException
-     * */
     @Override
     public void outcomeExcelDownload(List<OutcomeDTO> data, HttpServletResponse response) {
         // 엑셀파일(Workbook) 객체 생성

@@ -1,13 +1,21 @@
 let date = new Date();
 
+// 서버에서 전달된 초기 날짜 값을 가져와 설정
+const initialDateStr = document.querySelector('input[name="regDt"]').value;
+if (initialDateStr) {
+    const [year, month] = initialDateStr.split('-');
+    date = new Date(year, parseInt(month) - 1); // 월은 0부터 시작하므로 -1 필요
+}
+
 const renderCalendar = () => {
     const viewYear = date.getFullYear();
-    const viewMonth = date.getMonth();
+    const viewMonth = date.getMonth() + 1; // 0부터 시작하므로 +1
 
-    document.querySelector('.year-month').textContent = `${viewYear}년 ${viewMonth + 1}월`;
+    document.querySelector('.year-month').textContent = `${viewYear}년 ${viewMonth}월`;
 
-    const prevLast = new Date(viewYear, viewMonth, 0);
-    const thisLast = new Date(viewYear, viewMonth + 1, 0);
+    // 이전 달과 현재 달의 마지막 날을 구함
+    const prevLast = new Date(viewYear, viewMonth - 1, 0);
+    const thisLast = new Date(viewYear, viewMonth, 0);
 
     const PLDate = prevLast.getDate();
     const PLDay = prevLast.getDay();
@@ -36,11 +44,9 @@ const renderCalendar = () => {
     const isToday = (d, m, y) => d === today.getDate() && m === today.getMonth() && y === today.getFullYear();
 
     dates.forEach((date, i) => {
-        const condition = i >= firstDateIndex && i < lastDateIndex + 1
-            ? 'this'
-            : 'other';
-        const todayClass = isToday(date, viewMonth, viewYear) ? 'today' : '';
-        dates[i] = `<div class="date ${condition} ${todayClass}" onclick="openModal(${viewYear}, ${viewMonth + 1}, ${date})"><span class="day-number">${date}</span></div>`;
+        const condition = i >= firstDateIndex && i < lastDateIndex + 1 ? 'this' : 'other';
+        const todayClass = isToday(date, viewMonth - 1, viewYear) ? 'today' : '';
+        dates[i] = `<div class="date ${condition} ${todayClass}" onclick="openModal(${viewYear}, ${viewMonth}, ${date})"><span class="day-number">${date}</span></div>`;
     });
 
     document.querySelector('.dates').innerHTML = dates.join('');
@@ -65,8 +71,8 @@ const openModal = (year, month, day) => {
             modalBody.innerHTML = `
                 <p>날짜: ${formattedDate}</p>
                 <br>
-                <p>수입: ${incometotal} 원</p>
-                <p>지출: ${outcometotal} 원</p>
+                <p class = "incometotalmonth">수입(day) : +${incometotal} </p>
+                <p class = "outcometotalmonth">지출(day) : -${outcometotal} </p>
 
                 <h2>수입목록</h2>
                  <table>
@@ -135,19 +141,30 @@ window.onclick = function(event) {
     }
 };
 
+const sendDateToServer = () => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // 두 자리 포맷
+    const regDt = `${year}-${month}`;
+
+    // 서버에 현재 날짜를 폼을 통해 전송
+    const searchForm = document.searchForm;
+    searchForm.regDt.value = regDt;
+    searchForm.submit();
+};
+
 const prevMonth = () => {
     date.setMonth(date.getMonth() - 1);
-    renderCalendar();
+    sendDateToServer(); // 날짜를 서버로 전송
 };
 
 const nextMonth = () => {
     date.setMonth(date.getMonth() + 1);
-    renderCalendar();
+    sendDateToServer(); // 날짜를 서버로 전송
 };
 
 const goToday = () => {
     date = new Date();
-    renderCalendar();
+    sendDateToServer(); // 날짜를 서버로 전송
 };
 
 renderCalendar();
