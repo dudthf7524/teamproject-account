@@ -76,7 +76,7 @@
         @Bean
         public AuthenticationFailureHandler customAuthenticationFailureHandler() {
             return new CustomAuthenticationFailureHandler();
-        }
+    }
 
         @Bean
         public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
